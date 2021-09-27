@@ -13,13 +13,19 @@ public class Server {
     public static void main(String[] args) {
 
         String registryURL;
+        String objectURL;
         try{
+            String[] campusNames = {"DVL", "KKL", "WST"};
             int RMIPortNum = 1313;
-
             startRegistry(RMIPortNum);
-            RoomRecords exportedRoomRecords = new RoomRecords();
-            registryURL = "rmi://localhost:" + RMIPortNum + "/RoomRecords";
-            Naming.rebind(registryURL, exportedRoomRecords);
+            registryURL = "rmi://localhost:" + RMIPortNum;
+
+            for (String campusName : campusNames){
+                RoomRecords exportedRoomRecords = new RoomRecords();
+                objectURL = registryURL + "/RoomRecords" + campusName;
+                Naming.rebind(objectURL, exportedRoomRecords);
+            }
+
             System.out.println("Server registered.  Registry currently contains:");
             // list names currently in the registry
             listRegistry(registryURL);
@@ -42,7 +48,7 @@ public class Server {
         catch (RemoteException e) {
             // No valid registry at that port.
             System.out.println("RMI registry cannot be located at port "+ RMIPortNum);
-            Registry registry = LocateRegistry.createRegistry(RMIPortNum);
+            LocateRegistry.createRegistry(RMIPortNum);
             System.out.println("RMI registry created at port " + RMIPortNum);
         }
     }

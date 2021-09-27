@@ -1,7 +1,6 @@
 package com.DistributedSystems.client;
 import com.DistributedSystems.local.TimeSlot;
 import com.DistributedSystems.remote.IRoomRecords;
-import com.DistributedSystems.remote.RoomRecords;
 
 import java.io.*;
 import java.rmi.*;
@@ -9,40 +8,55 @@ import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 
 public class StudentClient {
     private static final String instructionDir = "instructions";
 
-    private static void executeInstructions(String instructionFileName, IRoomRecords[] roomRecordsList) throws RemoteException {
-        DateFormat dateFormat = new SimpleDateFormat("dd MM");
-        // --> could do this dateFormat.parse("10 11") for a simpler date format
+    private static void executeInstructions(String instructionFileName, String[] remoteObjectNames) throws IOException, NotBoundException {
         String path = instructionDir + "\\" + instructionFileName;
-        // todo read from file
-        System.out.println(roomRecordsList[0].createRoom(1, new Date(), new TimeSlot[]{new TimeSlot()}));
-        // todo, decide to call which object from the prefix
+        File file = new File(path);
+        FileReader fileReader = new FileReader(file);
+        String line = "none";
+        IRoomRecords roomRecords = null;
+        try (fileReader) {
+            BufferedReader br = new BufferedReader(fileReader);
+
+            line = br.readLine();
+            String username = line.substring(6);
+            String campus = username.substring(0, 3);
+            boolean admin = username.charAt(3) == 'A';
+
+            for (String remoteObjectName : remoteObjectNames){
+                if (remoteObjectName.endsWith(campus)){
+                    roomRecords = (IRoomRecords)Naming.lookup(remoteObjectName);
+                }
+            }
+
+            DateFormat dateFormat = new SimpleDateFormat("dd MM");
+            // --> could do this dateFormat.parse("10 11") for a simpler date format
+            System.out.println(roomRecords.createRoom(1, new Date(), new TimeSlot[]{new TimeSlot()}));
+        } catch (IOException | NotBoundException e) {
+            System.out.println("Exception: at line" + line);
+            throw e;
+        }
 
     }
 
     public static void main(String[] args) {
         try {
-
-            int startingPortNum = 1313;
-            String registryURL;
-//            String[] registryURLs = new String[3];
-            IRoomRecords[] roomRecordsList = new IRoomRecords[3];
-
-            for (int i = 0; i <= 2; i++) {
-                registryURL = "rmi://localhost:" + (i+startingPortNum) + "/RoomRecords";
-                roomRecordsList[i] = (IRoomRecords)Naming.lookup(registryURL);
-            }
-            // find the remote object and cast it to an interface object
+            int portNum = 1313;
+            String registryURL = "rmi://localhost:" + portNum;
+            String[] remoteObjectNames = Naming.list(registryURL);
 
             System.out.println("Lookup completed");
-            executeInstructions("Admin1.txt", roomRecordsList);
+            executeInstructions("Admin1.txt", remoteObjectNames);
         }
         catch (Exception e) {
             System.out.println("Exception in StudentClient: " + e);
+            System.out.println(Arrays.toString(e.getStackTrace()));
         }
     }
 }
