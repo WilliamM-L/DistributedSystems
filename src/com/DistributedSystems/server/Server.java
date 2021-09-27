@@ -7,6 +7,7 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Arrays;
 
 public class Server {
     public static void main(String[] args) {
@@ -14,6 +15,7 @@ public class Server {
         String registryURL;
         try{
             int RMIPortNum = 1313;
+
             startRegistry(RMIPortNum);
             RoomRecords exportedRoomRecords = new RoomRecords();
             registryURL = "rmi://localhost:" + RMIPortNum + "/RoomRecords";
@@ -25,6 +27,7 @@ public class Server {
         }
         catch (Exception e) {
             System.out.println("Exception in Server: " + e);
+            System.out.println(Arrays.toString(e.getStackTrace()));
         }
     }
 
