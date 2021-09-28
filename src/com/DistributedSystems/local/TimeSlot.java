@@ -1,24 +1,24 @@
 package com.DistributedSystems.local;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class TimeSlot implements Serializable {
-    public LocalDateTime start;
-    public LocalDateTime  end;
+    public LocalTime start;
+    public LocalTime  end;
 
-    public TimeSlot(LocalDateTime start, LocalDateTime end) {
+    public TimeSlot(LocalTime start, LocalTime end) {
         this.start = start;
         this.end = end;
     }
 
-    public TimeSlot(LocalDateTime start) {
+    public TimeSlot(LocalTime start) {
         this.start = start;
         this.end = start.plusHours(1);
     }
 
     public TimeSlot() {
-        this.start = LocalDateTime.now();
+        this.start = LocalTime.now();
         this.end = start.plusHours(1);;
     }
 }

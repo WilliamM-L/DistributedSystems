@@ -8,6 +8,9 @@ import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,6 +38,10 @@ public class StudentClient {
                 }
             }
 
+            while((line=br.readLine())!=null){
+
+            }
+
             DateFormat dateFormat = new SimpleDateFormat("dd MM");
             // --> could do this dateFormat.parse("10 11") for a simpler date format
             System.out.println(roomRecords.createRoom(1, new Date(), new TimeSlot[]{new TimeSlot()}));
@@ -52,7 +59,29 @@ public class StudentClient {
             String[] remoteObjectNames = Naming.list(registryURL);
 
             System.out.println("Lookup completed");
+
             executeInstructions("Admin1.txt", remoteObjectNames);
+
+//            new Thread(() -> {
+//                try {
+//                    executeInstructions("Admin1.txt", remoteObjectNames);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                } catch (NotBoundException e) {
+//                    e.printStackTrace();
+//                }
+//            }).start();
+//            new Thread(() -> {
+//                try {
+//                    executeInstructions("Admin1.txt", remoteObjectNames);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                } catch (NotBoundException e) {
+//                    e.printStackTrace();
+//                }
+//            }).start();
+
+
         }
         catch (Exception e) {
             System.out.println("Exception in StudentClient: " + e);
