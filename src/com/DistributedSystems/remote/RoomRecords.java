@@ -28,18 +28,18 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
         // conversion ex: LocalDateTime date = LocalDateTime.from(LocalDate.parse("01-10-2021", formatter).atStartOfDay());
 
         LocalDate date = LocalDate.parse("01-10-2021", formatter);
-        HashMap<Integer, RoomRecord> entry = new HashMap<Integer, RoomRecord>();
-        entry.put(1, new RoomRecord(new TimeSlot(LocalTime.of(6,0)), false));
+        HashMap<Integer, RoomRecord[]> entry = new HashMap<>();
+        entry.put(1, new RoomRecord[]{new RoomRecord(new TimeSlot(LocalTime.of(6,0)), false)});
         roomRecords.put(date, entry);
 
         date = date.plusDays(1);
-        entry = new HashMap<Integer, RoomRecord>();
-        entry.put(1, new RoomRecord(new TimeSlot(LocalTime.of(6,0)), false));
+        entry = new HashMap<>();
+        entry.put(1, new RoomRecord[]{new RoomRecord(new TimeSlot(LocalTime.of(6,0)), false)});
         roomRecords.put(date, entry);
 
         date = date.plusDays(1);
-        entry = new HashMap<Integer, RoomRecord>();
-        entry.put(1, new RoomRecord(new TimeSlot(LocalTime.of(6,0)), false));
+        entry = new HashMap<>();
+        entry.put(1, new RoomRecord[]{new RoomRecord(new TimeSlot(LocalTime.of(6,0)), false)});
         roomRecords.put(date, entry);
 
     }

@@ -33,6 +33,7 @@ public class StudentClient {
             boolean admin = username.charAt(3) == 'A';
 
             for (String remoteObjectName : remoteObjectNames){
+                //todo account for students using a different campus for bookRoom
                 if (remoteObjectName.endsWith(campus)){
                     roomRecords = (IRoomRecords)Naming.lookup(remoteObjectName);
                 }
