@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
 
     public RoomRecords()  throws RemoteException{
-        //todo first key: LocalDate, use LocalDateTime in Timeslot only
         DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MM-yyyy").toFormatter(Locale.ENGLISH);
         // conversion ex: LocalDateTime date = LocalDateTime.from(LocalDate.parse("01-10-2021", formatter).atStartOfDay());
 

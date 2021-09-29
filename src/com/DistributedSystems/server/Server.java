@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 public class Server {
     public static void main(String[] args) {
+        // todo start a server process for each campus! 
 
         String registryURL;
         String objectURL;

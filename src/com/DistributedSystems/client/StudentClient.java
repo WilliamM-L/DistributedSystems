@@ -1,29 +1,27 @@
 package com.DistributedSystems.client;
+import com.DistributedSystems.lambda.Lambdas;
 import com.DistributedSystems.local.TimeSlot;
 import com.DistributedSystems.remote.IRoomRecords;
 
 import java.io.*;
 import java.rmi.*;
-import java.rmi.registry.Registry;
-import java.rmi.registry.LocateRegistry;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 
 public class StudentClient {
     private static final String instructionDir = "instructions";
 
-    private static void executeInstructions(String instructionFileName, String[] remoteObjectNames) throws IOException, NotBoundException {
+    private static void executeInstructionGroup(String instructionFileName, String[] remoteObjectNames) throws IOException, NotBoundException {
         String path = instructionDir + "\\" + instructionFileName;
         File file = new File(path);
         FileReader fileReader = new FileReader(file);
         String line = "none";
+        String[] args = null;
         IRoomRecords roomRecords = null;
+        Lambdas.ChooseCampus evaluator = null;
+        boolean campusServerFound = false;
         try (fileReader) {
             BufferedReader br = new BufferedReader(fileReader);
 
@@ -32,14 +30,28 @@ public class StudentClient {
             String campus = username.substring(0, 3);
             boolean admin = username.charAt(3) == 'A';
 
-            for (String remoteObjectName : remoteObjectNames){
-                //todo account for students using a different campus for bookRoom
-                if (remoteObjectName.endsWith(campus)){
-                    roomRecords = (IRoomRecords)Naming.lookup(remoteObjectName);
-                }
-            }
-
             while((line=br.readLine())!=null){
+                args = line.split(" ");
+
+                if (args[0].equals("bookRoom")){
+                    evaluator = (remoteObjectName, args_) -> remoteObjectName.endsWith(args_[1]);
+                } else {
+                    evaluator = (remoteObjectName, args_) -> remoteObjectName.endsWith(campus);
+                }
+
+                campusServerFound = false;
+                for (String remoteObjectName : remoteObjectNames){
+                    if (evaluator.chooseCampus(remoteObjectName, args)){
+                        roomRecords = (IRoomRecords)Naming.lookup(remoteObjectName);
+                        campusServerFound = true;
+                    }
+                }
+
+                if (campusServerFound){
+                    excecuteInstruction(args, roomRecords, admin);
+                } else {
+                    System.out.println("Sorry that campus is not available at the moment");
+                }
 
             }
 
@@ -53,6 +65,10 @@ public class StudentClient {
 
     }
 
+    private static void excecuteInstruction(String[] args, IRoomRecords roomRecords, boolean isAdmin) {
+
+    }
+
     public static void main(String[] args) {
         try {
             int portNum = 1313;
@@ -61,7 +77,7 @@ public class StudentClient {
 
             System.out.println("Lookup completed");
 
-            executeInstructions("Admin1.txt", remoteObjectNames);
+            executeInstructionGroup("Admin1.txt", remoteObjectNames);
 
 //            new Thread(() -> {
 //                try {
