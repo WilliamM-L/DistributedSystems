@@ -11,21 +11,19 @@ import java.util.Arrays;
 
 public class Server {
     public static void main(String[] args) {
-        // todo start a server process for each campus! 
+        // todo start a server process for each campus! pass a string from args[] to decide how to call the obj
 
         String registryURL;
         String objectURL;
         try{
-            String[] campusNames = {"DVL", "KKL", "WST"};
+//            String[] campusNames = {"DVL", "KKL", "WST"};
             int RMIPortNum = 1313;
             startRegistry(RMIPortNum);
             registryURL = "rmi://localhost:" + RMIPortNum;
 
-            for (String campusName : campusNames){
-                RoomRecords exportedRoomRecords = new RoomRecords();
-                objectURL = registryURL + "/RoomRecords" + campusName;
-                Naming.rebind(objectURL, exportedRoomRecords);
-            }
+            RoomRecords exportedRoomRecords = new RoomRecords();
+            objectURL = registryURL + "/RoomRecords" + args[0];
+            Naming.rebind(objectURL, exportedRoomRecords);
 
             System.out.println("Server registered.  Registry currently contains:");
             // list names currently in the registry

@@ -5,15 +5,17 @@ import com.DistributedSystems.remote.IRoomRecords;
 
 import java.io.*;
 import java.rmi.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.Locale;
 
 public class StudentClient {
     private static final String instructionDir = "instructions";
+    private static final DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MM-yyyy").toFormatter(Locale.ENGLISH);
 
-    private static void executeInstructionGroup(String instructionFileName, String[] remoteObjectNames) throws IOException, NotBoundException {
+    private static void executeInstructionFile(String instructionFileName, String[] remoteObjectNames) throws IOException, NotBoundException {
         String path = instructionDir + "\\" + instructionFileName;
         File file = new File(path);
         FileReader fileReader = new FileReader(file);
@@ -48,16 +50,13 @@ public class StudentClient {
                 }
 
                 if (campusServerFound){
-                    excecuteInstruction(args, roomRecords, admin);
+                    executeInstruction(args, roomRecords, admin);
                 } else {
                     System.out.println("Sorry that campus is not available at the moment");
                 }
 
             }
 
-            DateFormat dateFormat = new SimpleDateFormat("dd MM");
-            // --> could do this dateFormat.parse("10 11") for a simpler date format
-            System.out.println(roomRecords.createRoom(1, new Date(), new TimeSlot[]{new TimeSlot()}));
         } catch (IOException | NotBoundException e) {
             System.out.println("Exception: at line" + line);
             throw e;
@@ -65,11 +64,46 @@ public class StudentClient {
 
     }
 
-    private static void excecuteInstruction(String[] args, IRoomRecords roomRecords, boolean isAdmin) {
+    private static void executeInstruction(String[] args, IRoomRecords roomRecords, boolean isAdmin) throws RemoteException {
+        int roomNum;
+        String[] timeSlotText;
+        TimeSlot[] timeSlots;
+        String instructionName = args[0];
+        LocalDate date;
+        boolean unauthorised = false;
+        // String.equals is used implicitly in the switch statement
+        switch (instructionName){
+            case "createRoom":
+                if (!isAdmin){
+                    unauthorised = true;
+                } else {
+                    roomNum = Integer.parseInt(args[1]);
+                    date = LocalDate.parse(args[2], dateTimeFormatter);
+                    timeSlotText = args[3].split("/");
+                    timeSlots = TimeSlot.parseTimeSlots(timeSlotText);
+                    roomRecords.createRoom(roomNum, date, timeSlots);
+                }
+                break;
+            case "deleteRoom":
+                if (!isAdmin){
+                    unauthorised = true;
+                } else {
+                    roomNum = Integer.parseInt(args[1]);
+                    date = LocalDate.parse(args[2], dateTimeFormatter);
+                    timeSlotText = args[3].split("/");
+                    timeSlots = TimeSlot.parseTimeSlots(timeSlotText);
+                    roomRecords.deleteRoom(roomNum, date, timeSlots);
+                }
+                break;
+        }
+
+        if (unauthorised){
+            System.out.println("Cannot execute this command.");
+        }
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NotBoundException, IOException {
         try {
             int portNum = 1313;
             String registryURL = "rmi://localhost:" + portNum;
@@ -77,7 +111,7 @@ public class StudentClient {
 
             System.out.println("Lookup completed");
 
-            executeInstructionGroup("Admin1.txt", remoteObjectNames);
+            executeInstructionFile("Admin1.txt", remoteObjectNames);
 
 //            new Thread(() -> {
 //                try {
@@ -103,6 +137,7 @@ public class StudentClient {
         catch (Exception e) {
             System.out.println("Exception in StudentClient: " + e);
             System.out.println(Arrays.toString(e.getStackTrace()));
+            throw e;
         }
     }
 }
