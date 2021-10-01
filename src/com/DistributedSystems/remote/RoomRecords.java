@@ -45,25 +45,25 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
 
     // ADMIN
     public String createRoom(int room_Number, LocalDate date, TimeSlot[] list_Of_Time_Slots) throws java.rmi.RemoteException{
-        // todo: try waiting to see if middleware starts a thread per request
-        try {
-            TimeUnit.SECONDS.sleep(5);
-        }catch (Exception e){
-            System.out.println(e.getStackTrace());
-        }
+        // todo: try waiting to see if middleware starts a thread per request: it does!
+//        try {
+//            TimeUnit.SECONDS.sleep(5);
+//        }catch (Exception e){
+//            System.out.println(e.getStackTrace());
+//        }
         return "room created yo";
     }
     public String  deleteRoom (int room_Number, LocalDate date, TimeSlot[] list_Of_Time_Slots) throws java.rmi.RemoteException{
-        return "";
+        return "room deleted";
     }
     // STUDENT
     public String bookRoom(String campusName, int roomNumber, LocalDate date, TimeSlot timeslot) throws java.rmi.RemoteException{
-        return "";
+        return "room booked";
     }
     public String getAvailableTimeSlot(LocalDate date) throws java.rmi.RemoteException{
-        return "";
+        return "time slot got";
     }
     public String cancelBooking(String bookingID)  throws java.rmi.RemoteException{
-        return "";
+        return "booking cancelled";
     }
 }

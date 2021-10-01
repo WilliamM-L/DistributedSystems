@@ -1,3 +1,6 @@
 login DVLA1111
 createRoom 5 01-10-2021 10:00-11:00/13:00-14:00
 deleteRoom 5 01-10-2021 13:00-14:00
+bookRoom DVL 5 01-10-2021 10:00-11:00
+getAvailableTimeSlot 01-10-2021
+cancelBooking

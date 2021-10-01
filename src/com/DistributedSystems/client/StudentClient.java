@@ -8,12 +8,12 @@ import java.rmi.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.util.Arrays;
-import java.util.Locale;
+import java.util.*;
 
 public class StudentClient {
     private static final String instructionDir = "instructions";
     private static final DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MM-yyyy").toFormatter(Locale.ENGLISH);
+    private static Stack<String> bookingIDs = new Stack<>();
 
     private static void executeInstructionFile(String instructionFileName, String[] remoteObjectNames) throws IOException, NotBoundException {
         String path = instructionDir + "\\" + instructionFileName;
@@ -68,6 +68,7 @@ public class StudentClient {
         int roomNum;
         String[] timeSlotText;
         TimeSlot[] timeSlots;
+        String campusNameArg;
         String instructionName = args[0];
         LocalDate date;
         boolean unauthorised = false;
@@ -95,6 +96,24 @@ public class StudentClient {
                     roomRecords.deleteRoom(roomNum, date, timeSlots);
                 }
                 break;
+            case "bookRoom":
+                campusNameArg = args[1];
+                roomNum = Integer.parseInt(args[2]);
+                date = LocalDate.parse(args[3], dateTimeFormatter);
+                timeSlotText = args[4].split("/");
+                timeSlots = TimeSlot.parseTimeSlots(timeSlotText);
+                roomRecords.bookRoom(campusNameArg, roomNum, date, timeSlots[0]);
+                break;
+            case "getAvailableTimeSlot":
+                date = LocalDate.parse(args[1], dateTimeFormatter);
+                roomRecords.getAvailableTimeSlot(date);
+                break;
+            case "cancelBooking":
+                roomRecords.cancelBooking(bookingIDs.pop());
+                break;
+            default:
+                System.out.println("Could not understand command");
+                break;
         }
 
         if (unauthorised){
@@ -105,11 +124,12 @@ public class StudentClient {
 
     public static void main(String[] args) throws NotBoundException, IOException {
         try {
+            //todo should I start a process per client? It would better emulate having people on different hosts.
             int portNum = 1313;
             String registryURL = "rmi://localhost:" + portNum;
             String[] remoteObjectNames = Naming.list(registryURL);
-
             System.out.println("Lookup completed");
+
 
             executeInstructionFile("Admin1.txt", remoteObjectNames);
 

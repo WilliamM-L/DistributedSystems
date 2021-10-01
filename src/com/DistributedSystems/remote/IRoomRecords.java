@@ -10,8 +10,8 @@ import com.DistributedSystems.local.TimeSlot;
 
 public interface IRoomRecords extends Remote {
     HashMap<LocalDate,HashMap<Integer, RoomRecord[]>> roomRecords = new HashMap<>();
-    // studentID: number of slots booked
-    HashMap<String, Integer> studentBookingCount = new HashMap<>();
+    // studentID: list of
+    HashMap<String, String[]> studentBookingCount = new HashMap<>();
     // ADMIN
     String createRoom(int room_Number, LocalDate date, TimeSlot[] list_Of_Time_Slots) throws java.rmi.RemoteException;
     String  deleteRoom (int room_Number, LocalDate date, TimeSlot[] list_Of_Time_Slots) throws java.rmi.RemoteException;
