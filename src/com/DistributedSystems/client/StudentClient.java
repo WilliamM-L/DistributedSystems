@@ -124,6 +124,9 @@ public class StudentClient {
 
     public static void main(String[] args) throws NotBoundException, IOException {
         try {
+            //todo implement rmi methods
+            //todo generate logs for both clients and servers
+            //todo sync methods so multiple can edit at once
             //todo should I start a process per client? It would better emulate having people on different hosts.
             int portNum = 1313;
             String registryURL = "rmi://localhost:" + portNum;
