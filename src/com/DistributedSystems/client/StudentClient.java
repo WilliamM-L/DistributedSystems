@@ -4,6 +4,10 @@ import com.DistributedSystems.local.TimeSlot;
 import com.DistributedSystems.remote.IRoomRecords;
 
 import java.io.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 import java.rmi.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -50,7 +54,7 @@ public class StudentClient {
                 }
 
                 if (campusServerFound){
-                    executeInstruction(args, roomRecords, admin);
+                    executeInstruction(args, roomRecords, admin, username);
                 } else {
                     System.out.println("Sorry that campus is not available at the moment");
                 }
@@ -64,7 +68,7 @@ public class StudentClient {
 
     }
 
-    private static void executeInstruction(String[] args, IRoomRecords roomRecords, boolean isAdmin) throws RemoteException {
+    private static void executeInstruction(String[] args, IRoomRecords roomRecords, boolean isAdmin, String userID) throws IOException {
         int roomNum;
         String[] timeSlotText;
         TimeSlot[] timeSlots;
@@ -102,11 +106,12 @@ public class StudentClient {
                 date = LocalDate.parse(args[3], dateTimeFormatter);
                 timeSlotText = args[4].split("/");
                 timeSlots = TimeSlot.parseTimeSlots(timeSlotText);
-                roomRecords.bookRoom(campusNameArg, roomNum, date, timeSlots[0]);
+                roomRecords.bookRoom(roomNum, date, timeSlots[0], userID);
                 break;
             case "getAvailableTimeSlot":
-                date = LocalDate.parse(args[1], dateTimeFormatter);
-                roomRecords.getAvailableTimeSlot(date);
+                String dateText = args[1];
+                roomRecords.getAvailableTimeSlot(dateText);
+
                 break;
             case "cancelBooking":
                 roomRecords.cancelBooking(bookingIDs.pop());

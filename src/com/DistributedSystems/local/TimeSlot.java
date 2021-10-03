@@ -2,6 +2,7 @@ package com.DistributedSystems.local;
 
 import java.io.Serializable;
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class TimeSlot implements Serializable {
     public LocalTime start;
@@ -33,5 +34,18 @@ public class TimeSlot implements Serializable {
     public TimeSlot() {
         this.start = LocalTime.now();
         this.end = start.plusHours(1);;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TimeSlot timeSlot = (TimeSlot) o;
+        return start.equals(timeSlot.start) && end.equals(timeSlot.end);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(start, end);
     }
 }

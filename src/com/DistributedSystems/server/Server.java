@@ -2,7 +2,11 @@ package com.DistributedSystems.server;
 
 import com.DistributedSystems.remote.RoomRecords;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -29,6 +33,28 @@ public class Server {
             // list names currently in the registry
             listRegistry(registryURL);
             System.out.println("RoomRecords Server ready.");
+            // can have an infinite loop here since threads are created per connection for rmi
+            DatagramSocket aSocket = null;
+            try{
+                aSocket = new DatagramSocket(6789);
+                // create socket at agreed port
+                byte[] buffer = new byte[1000];
+                while(true){
+                    DatagramPacket request = new DatagramPacket(buffer, buffer.length);
+                    aSocket.receive(request);
+                    DatagramPacket reply = new DatagramPacket(request.getData(), request.getLength(),
+                            request.getAddress(), request.getPort());
+                    aSocket.send(reply);
+                }
+            }catch (SocketException e){
+                System.out.println("Socket: " + e.getMessage());
+                throw e;
+            }catch (IOException e) {
+                System.out.println("IO: " + e.getMessage());
+                throw e;
+            }finally {if(aSocket != null) aSocket.close();}
+
+
         }
         catch (Exception e) {
             System.out.println("Exception in Server: " + e);

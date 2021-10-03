@@ -3,6 +3,11 @@ package com.DistributedSystems.remote;
 import com.DistributedSystems.local.RoomRecord;
 import com.DistributedSystems.local.TimeSlot;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 import java.nio.charset.Charset;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -69,25 +74,100 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
 
         dayRooms.put(room_Number, roomRecordList);
         roomRecords.put(date, dayRooms);
-        return "room created yo";
-        // todo: try waiting to see if middleware starts a thread per request: it does!
+        return msg;
+        // try waiting to see if middleware starts a thread per request: it does!
 //        try {
 //            TimeUnit.SECONDS.sleep(5);
 //        }catch (Exception e){
 //            System.out.println(e.getStackTrace());
 //        }
     }
-    public String  deleteRoom (int room_Number, LocalDate date, TimeSlot[] list_Of_Time_Slots) throws java.rmi.RemoteException{
-        return "room deleted";
+    public String  deleteRoom (int roomNumber, LocalDate date, TimeSlot[] list_Of_Time_Slots) throws java.rmi.RemoteException{
+        List<RoomRecord> roomRecordList;
+        HashMap<Integer, List<RoomRecord>> dayRooms = roomRecords.get(date);
+        String msg = "Room records deleted successfully";
+
+        if (dayRooms == null){
+            return "No room records under date: " + date.toString();
+        } else {
+            roomRecordList = dayRooms.get(roomNumber);
+            // might be null
+        }
+
+        if (roomRecordList == null){
+            return "No room records under room number: " + roomNumber;
+        }else {
+            msg = RoomRecord.deleteRoomRecordsFromTimeSlots(roomRecordList, list_Of_Time_Slots, studentBookingCount);
+        }
+        return msg;
     }
     // STUDENT
-    public String bookRoom(String campusName, int roomNumber, LocalDate date, TimeSlot timeslot) throws java.rmi.RemoteException{
-        return "room booked";
+    public String bookRoom(int roomNumber, LocalDate date, TimeSlot timeslot, String userID) throws java.rmi.RemoteException{
+        List<RoomRecord> roomRecordList;
+        HashMap<Integer, List<RoomRecord>> dayRooms = roomRecords.get(date);
+        String msg = "Room records deleted successfully";
+
+        if (dayRooms == null){
+            return "No room records under date: " + date.toString();
+        } else {
+            roomRecordList = dayRooms.get(roomNumber);
+            // might be null
+        }
+
+        if (roomRecordList == null){
+            return "No room records under room number: " + roomNumber;
+        }else {
+            msg = RoomRecord.bookFromList(roomRecordList, timeslot, studentBookingCount, userID);
+        }
+        return msg;
     }
     public String getAvailableTimeSlot(LocalDate date) throws java.rmi.RemoteException{
+        // todo only used to check yourself
         return "time slot got";
     }
+
+    public String getAvailableTimeSlot(String dateText) throws java.rmi.RemoteException{
+        //todo send text to other objs' servers, then parse it for ourselves, call local method.
+        DatagramSocket aSocket = null;
+//        try {
+//            aSocket = new DatagramSocket();
+//            byte [] m = args[0].getBytes();
+//            InetAddress aHost = InetAddress.getByName(args[1]);
+//            int serverPort = 6789;
+//            DatagramPacket request =
+//                    new DatagramPacket(m,  args[0].length(), aHost, serverPort);
+//            aSocket.send(request);
+//            byte[] buffer = new byte[1000];
+//            DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
+//            aSocket.receive(reply);
+//            System.out.println("Reply: " + new String(reply.getData()));
+//        }catch (SocketException e){
+//            System.out.println("Socket: " + e.getMessage());
+//        }catch (IOException e){
+//            System.out.println("IO: " + e.getMessage());
+//        }finally {if(aSocket != null) aSocket.close();}
+
+        return "time slot got";
+
+    }
+
     public String cancelBooking(String bookingID)  throws java.rmi.RemoteException{
-        return "booking cancelled";
+        //bookingID is the recordID
+        List<RoomRecord> roomRecordList;
+        String msg = "The booked room record could not be found, it was mostly likely deleted.";
+
+        for (Map.Entry<LocalDate, HashMap<Integer, List<RoomRecord>>> outerSet: roomRecords.entrySet()){
+            for(Map.Entry<Integer, List<RoomRecord>> innerSet: outerSet.getValue().entrySet()){
+                for(RoomRecord roomRecord: innerSet.getValue()){
+                    if (roomRecord.recordID.equals(bookingID)){
+                        roomRecord.booked_by = null;
+                        // todo update student booking count
+                        msg = "Booking cancelled.";
+                    }
+                }
+            }
+        }
+
+        return msg;
     }
 }
