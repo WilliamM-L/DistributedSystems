@@ -1,0 +1,14 @@
+==========
+Date: 2021-10-03T15:40:50.254508400
+Operation: Create Room
+Time slots : [{start=10:00, end=11:00}, {start=13:00, end=14:00}]
+room number : 5
+Date at which to create room records : 2021-10-03
+Reply: Success: All room records added.
+==========
+Date: 2021-10-03T15:42:38.705323600
+Operation: Create Room
+Time slots : [{start=08:00, end=11:30}, {start=15:00, end=16:00}]
+room number : 5
+Date at which to create room records : 2021-10-03
+Reply: Success: All timeslots were added.

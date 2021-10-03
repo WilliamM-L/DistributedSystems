@@ -13,8 +13,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
-public class StudentClient {
+public class Client {
     private static final String instructionDir = "instructions";
     private static final DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MM-yyyy").toFormatter(Locale.ENGLISH);
     private static Stack<String> bookingIDs = new Stack<>();
@@ -72,7 +73,7 @@ public class StudentClient {
         int roomNum;
         String[] timeSlotText;
         TimeSlot[] timeSlots;
-        String campusNameArg;
+        String campusNameArg, reply;
         String instructionName = args[0];
         LocalDate date;
         boolean unauthorised = false;
@@ -106,7 +107,10 @@ public class StudentClient {
                 date = LocalDate.parse(args[3], dateTimeFormatter);
                 timeSlotText = args[4].split("/");
                 timeSlots = TimeSlot.parseTimeSlots(timeSlotText);
-                roomRecords.bookRoom(roomNum, date, timeSlots[0], userID);
+                reply = roomRecords.bookRoom(roomNum, date, timeSlots[0], userID);
+                if (reply.startsWith("Success")){
+                    bookingIDs.push(reply.split(" ")[0]);
+                }
                 break;
             case "getAvailableTimeSlot":
                 String dateText = args[1];
@@ -127,14 +131,20 @@ public class StudentClient {
 
     }
 
-    public static void main(String[] args) throws NotBoundException, IOException {
+    public static void main(String[] args) throws NotBoundException, IOException, InterruptedException {
         try {
             //todo implement rmi methods
+            //todo test most of them!!!
+
             //todo generate logs for both clients and servers
             //todo sync methods so multiple can edit at once
             //todo should I start a process per client? It would better emulate having people on different hosts.
             int portNum = 1313;
             String registryURL = "rmi://localhost:" + portNum;
+
+            // Waiting for the server to come online when they are started at the same time
+            TimeUnit.SECONDS.sleep(2);
+
             String[] remoteObjectNames = Naming.list(registryURL);
             System.out.println("Lookup completed");
 

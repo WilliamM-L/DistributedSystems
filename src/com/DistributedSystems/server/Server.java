@@ -21,12 +21,13 @@ public class Server {
         String objectURL;
         try{
 //            String[] campusNames = {"DVL", "KKL", "WST"};
+            String campusName = args[0];
             int RMIPortNum = 1313;
             startRegistry(RMIPortNum);
             registryURL = "rmi://localhost:" + RMIPortNum;
 
-            RoomRecords exportedRoomRecords = new RoomRecords();
-            objectURL = registryURL + "/RoomRecords" + args[0];
+            RoomRecords exportedRoomRecords = new RoomRecords(campusName);
+            objectURL = registryURL + "/RoomRecords" + campusName;
             Naming.rebind(objectURL, exportedRoomRecords);
 
             System.out.println("Server registered.  Registry currently contains:");

@@ -3,6 +3,8 @@ package com.DistributedSystems.remote;
 import com.DistributedSystems.local.RoomRecord;
 import com.DistributedSystems.local.TimeSlot;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -23,8 +25,17 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
+    public final static String logsFolder = "logs\\server\\";
+    public final String campusName;
+    private BufferedWriter logger;
 
-    public RoomRecords()  throws RemoteException{
+    public RoomRecords(String campusName)  throws RemoteException{
+        this.campusName = campusName;
+        try {
+            logger = new BufferedWriter(new FileWriter(logsFolder + campusName + ".txt"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MM-yyyy").toFormatter(Locale.ENGLISH);
         // conversion ex: LocalDateTime date = LocalDateTime.from(LocalDate.parse("01-10-2021", formatter).atStartOfDay());
 
@@ -55,7 +66,7 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
     public String createRoom(int room_Number, LocalDate date, TimeSlot[] list_Of_Time_Slots) throws java.rmi.RemoteException{
         List<RoomRecord> roomRecordList, newRoomRecordList;
         HashMap<Integer, List<RoomRecord>> dayRooms = roomRecords.get(date);
-        String msg = "Room records added successfully";
+        String msg;
 
         if (dayRooms == null){
             dayRooms = new HashMap<>();
@@ -67,6 +78,7 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
 
         if (roomRecordList == null){
             roomRecordList =  RoomRecord.makeFromTimeSlotList(list_Of_Time_Slots);
+            msg = RoomRecord.successPrefix + "All room records added.";
         }else {
             newRoomRecordList =  RoomRecord.makeFromTimeSlotList(list_Of_Time_Slots);
             msg = RoomRecord.addValidRoomRecords(roomRecordList, newRoomRecordList);
@@ -74,6 +86,11 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
 
         dayRooms.put(room_Number, roomRecordList);
         roomRecords.put(date, dayRooms);
+        HashMap<String, String> paramNames = new HashMap<>();
+        paramNames.put("room number", Integer.toString(room_Number));
+        paramNames.put("Date at which to create room records", date.toString());
+        paramNames.put("Time slots", Arrays.toString(list_Of_Time_Slots));
+        log("Create Room", paramNames, msg);
         return msg;
         // try waiting to see if middleware starts a thread per request: it does!
 //        try {
@@ -83,42 +100,63 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
 //        }
     }
     public String  deleteRoom (int roomNumber, LocalDate date, TimeSlot[] list_Of_Time_Slots) throws java.rmi.RemoteException{
-        List<RoomRecord> roomRecordList;
+        List<RoomRecord> roomRecordList = null;
         HashMap<Integer, List<RoomRecord>> dayRooms = roomRecords.get(date);
-        String msg = "Room records deleted successfully";
+        boolean leaveNow = false;
+        String msg = null;
 
         if (dayRooms == null){
-            return "No room records under date: " + date.toString();
+            msg = RoomRecord.failurePrefix + "No room records under date: " + date.toString();
+            leaveNow = true;
         } else {
             roomRecordList = dayRooms.get(roomNumber);
             // might be null
         }
 
-        if (roomRecordList == null){
-            return "No room records under room number: " + roomNumber;
-        }else {
-            msg = RoomRecord.deleteRoomRecordsFromTimeSlots(roomRecordList, list_Of_Time_Slots, studentBookingCount);
+        if (!leaveNow){
+            if (roomRecordList == null){
+                msg = RoomRecord.failurePrefix + "No room records under room number: " + roomNumber;
+            }else {
+                msg = RoomRecord.deleteRoomRecordsFromTimeSlots(roomRecordList, list_Of_Time_Slots, studentBookingCount);
+            }
         }
+
+        HashMap<String, String> paramNames = new HashMap<>();
+        paramNames.put("room number", Integer.toString(roomNumber));
+        paramNames.put("Date at which to delete room records", date.toString());
+        paramNames.put("Time slots", Arrays.toString(list_Of_Time_Slots));
+        log("Delete Room", paramNames, msg);
         return msg;
     }
     // STUDENT
     public String bookRoom(int roomNumber, LocalDate date, TimeSlot timeslot, String userID) throws java.rmi.RemoteException{
-        List<RoomRecord> roomRecordList;
+        List<RoomRecord> roomRecordList = null;
         HashMap<Integer, List<RoomRecord>> dayRooms = roomRecords.get(date);
-        String msg = "Room records deleted successfully";
+        String msg = null;
+        boolean leaveNow = false;
 
         if (dayRooms == null){
-            return "No room records under date: " + date.toString();
+            msg = RoomRecord.failurePrefix + "No room records under date: " + date.toString();
+            leaveNow = true;
         } else {
             roomRecordList = dayRooms.get(roomNumber);
             // might be null
         }
 
-        if (roomRecordList == null){
-            return "No room records under room number: " + roomNumber;
-        }else {
-            msg = RoomRecord.bookFromList(roomRecordList, timeslot, studentBookingCount, userID);
+        if (!leaveNow){
+            if (roomRecordList == null){
+                msg = RoomRecord.failurePrefix + "No room records under room number: " + roomNumber;
+            }else {
+                msg = RoomRecord.bookFromList(roomRecordList, timeslot, studentBookingCount, userID);
+            }
         }
+
+        HashMap<String, String> paramNames = new HashMap<>();
+        paramNames.put("room number", Integer.toString(roomNumber));
+        paramNames.put("Date at which to book the room", date.toString());
+        paramNames.put("Time slot", timeslot.toString());
+        paramNames.put("User ID", userID);
+        log("Book Room", paramNames, msg);
         return msg;
     }
     public String getAvailableTimeSlot(LocalDate date) throws java.rmi.RemoteException{
@@ -153,8 +191,7 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
 
     public String cancelBooking(String bookingID)  throws java.rmi.RemoteException{
         //bookingID is the recordID
-        List<RoomRecord> roomRecordList;
-        String msg = "The booked room record could not be found, it was mostly likely deleted.";
+        String msg = RoomRecord.failurePrefix + "The booked room record could not be found, it was mostly likely deleted.";
 
         for (Map.Entry<LocalDate, HashMap<Integer, List<RoomRecord>>> outerSet: roomRecords.entrySet()){
             for(Map.Entry<Integer, List<RoomRecord>> innerSet: outerSet.getValue().entrySet()){
@@ -162,12 +199,31 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
                     if (roomRecord.recordID.equals(bookingID)){
                         roomRecord.booked_by = null;
                         // todo update student booking count
-                        msg = "Booking cancelled.";
+                        msg = RoomRecord.successPrefix + "Booking cancelled.";
                     }
                 }
             }
         }
-
+        HashMap<String, String> paramNames = new HashMap<>();
+        paramNames.put("Booking ID", bookingID);
+        log("Cancel Booking", paramNames, msg);
         return msg;
+    }
+
+    private synchronized void log(String operation, HashMap<String, String> operationParams, String reply){
+        LocalDateTime timeOfRequest = LocalDateTime.now();
+        try {
+            logger.write("==========\n");
+            logger.write("Date: " + timeOfRequest + "\n");
+            logger.write("Operation: " + operation + "\n");
+            for (Map.Entry<String, String> set: operationParams.entrySet()){
+                logger.write(set.getKey() + " : " + set.getValue() + "\n");
+            }
+            logger.write("Reply: " + reply + "\n");
+            logger.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

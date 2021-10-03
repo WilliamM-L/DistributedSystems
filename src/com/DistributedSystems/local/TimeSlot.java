@@ -48,4 +48,12 @@ public class TimeSlot implements Serializable {
     public int hashCode() {
         return Objects.hash(start, end);
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "start=" + start +
+                ", end=" + end +
+                '}';
+    }
 }

@@ -2,12 +2,16 @@ package com.DistributedSystems.local;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import static java.time.temporal.ChronoUnit.MINUTES;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RoomRecord {
     public String recordID;
     public TimeSlot timeSlot;
     public String booked_by;
+    public final static String successPrefix = "Success: ";
+    public final static String failurePrefix = "Failed: ";
 
     public static List<RoomRecord> makeFromTimeSlotList(TimeSlot[] timeSlots){
         List<RoomRecord> result = new ArrayList<>(timeSlots.length);
@@ -41,15 +45,18 @@ public class RoomRecord {
             }
         }
         roomRecordList.addAll(validNewRoomRecordList);
-        if(validNewRoomRecordList.size() < newRoomRecordList.size()){
-            msg = "The conflicting timeslots were ignored, the valid ones were added.";
+        if (validNewRoomRecordList.size() == 0){
+            msg = failurePrefix + "All given timeslots conflict with existing room records.";
+        }
+        else if(validNewRoomRecordList.size() < newRoomRecordList.size()){
+            msg = successPrefix + "The conflicting timeslots were ignored, the valid ones were added.";
         } else {
-            msg = "All timeslots were added.";
+            msg = successPrefix + "All timeslots were added.";
         }
         return  msg;
     }
 
-    public static String deleteRoomRecordsFromTimeSlots(List<RoomRecord> roomRecordList, TimeSlot[] list_of_time_slots, HashMap<String, List<String>> studentBookingCount) {
+    public static String deleteRoomRecordsFromTimeSlots(List<RoomRecord> roomRecordList, TimeSlot[] list_of_time_slots, ConcurrentHashMap<String, List<String>> studentBookingCount) {
         String msg;
         ArrayList<Integer> indicesToDelete = new ArrayList<>();
         RoomRecord roomRecord;
@@ -59,7 +66,6 @@ public class RoomRecord {
                 roomRecord = roomRecordList.get(i);
                 if (roomRecord.timeSlot.equals(list_of_time_slots[j])){
                     indicesToDelete.add(i);
-                    //todo reduce booking count for student
                     studentBookingList = studentBookingCount.get(roomRecord.booked_by);
                     studentBookingList.remove(roomRecord.recordID);
                 }
@@ -83,8 +89,9 @@ public class RoomRecord {
         return msg;
     }
 
-    public static String bookFromList(List<RoomRecord> roomRecordList, TimeSlot timeslot, HashMap<String, List<String>> studentBookingCount, String userID) {
+    public static String bookFromList(List<RoomRecord> roomRecordList, TimeSlot timeslot, ConcurrentHashMap<String, List<String>> studentBookingCount, String userID) {
         boolean wasBooked = false;
+        String confirmation = null;
         List<String> roomsBookedByStudent;
         for(RoomRecord roomRecord: roomRecordList){
             if (roomRecord.timeSlot.equals(timeslot)){
@@ -95,27 +102,42 @@ public class RoomRecord {
                     roomsBookedByStudent.add(roomRecord.recordID);
                     studentBookingCount.put(userID, roomsBookedByStudent);
                 } else {
+                    if (roomRecord.booked_by != null){
+                        return failurePrefix + "Room is already booked.";
+                    }
                     if (roomsBookedByStudent.size() < 3){
                         roomRecord.booked_by = userID;
+                        confirmation = roomRecord.recordID;
                         // IMPORTANT : BOOKINGID IS JUST THE RECORDID FOR SIMPLICITY!
                         roomsBookedByStudent.add(roomRecord.recordID);
                     }else {
-                        return "You have booked 3 rooms already, come back next week!";
+                        return  failurePrefix + "You have booked 3 rooms already, come back next week!";
                     }
                 }
                 break;
             }
         }
         if (wasBooked){
-            return "Room record was booked.";
+            return successPrefix + confirmation;
         } else {
-            return "Room record could not be found.";
+            return failurePrefix +"Room record could not be found.";
         }
     }
 
     private boolean intersect(RoomRecord roomRecord) {
-        boolean startWithinTimeSlot = this.timeSlot.start.isAfter(roomRecord.timeSlot.start) && this.timeSlot.start.isBefore(roomRecord.timeSlot.end);
-        boolean endWithinTimeSlot = this.timeSlot.end.isAfter(roomRecord.timeSlot.start) && this.timeSlot.end.isBefore(roomRecord.timeSlot.end);
-        return startWithinTimeSlot || endWithinTimeSlot;
+        // go with smallest time slot
+        boolean startWithinTimeSlot;
+        boolean endWithinTimeSlot;
+//        if (MINUTES.between(this.timeSlot.start, this.timeSlot.end) < MINUTES.between(this.timeSlot.start, this.timeSlot.end)){
+//            startWithinTimeSlot = this.timeSlot.start.isAfter(roomRecord.timeSlot.start) && this.timeSlot.start.isBefore(roomRecord.timeSlot.end);
+//            endWithinTimeSlot = this.timeSlot.end.isAfter(roomRecord.timeSlot.start) && this.timeSlot.end.isBefore(roomRecord.timeSlot.end);
+//        } else {
+//            startWithinTimeSlot = roomRecord.timeSlot.start.isAfter(this.timeSlot.start) && this.timeSlot.start.isBefore(roomRecord.timeSlot.end);
+//            endWithinTimeSlot = this.timeSlot.end.isAfter(roomRecord.timeSlot.start) && this.timeSlot.end.isBefore(roomRecord.timeSlot.end);
+//        }
+        startWithinTimeSlot = this.timeSlot.start.isAfter(roomRecord.timeSlot.start) && this.timeSlot.start.isBefore(roomRecord.timeSlot.end);
+        endWithinTimeSlot = this.timeSlot.end.isAfter(roomRecord.timeSlot.start) && this.timeSlot.end.isBefore(roomRecord.timeSlot.end);
+        boolean timeSlotEntirelyWithin = this.timeSlot.start.isBefore(roomRecord.timeSlot.start) && this.timeSlot.end.isAfter(roomRecord.timeSlot.end);
+        return startWithinTimeSlot || endWithinTimeSlot || timeSlotEntirelyWithin;
     }
 }
