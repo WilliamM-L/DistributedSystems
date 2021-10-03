@@ -23,7 +23,7 @@ public class RoomRecord {
     }
 
     public RoomRecord(TimeSlot timeSlot) {
-        this.recordID = "RR" + Math.floor(Math.random()*1000000);
+        this.recordID = "RR" + (int)Math.floor(Math.random()*1000000);
         this.timeSlot = timeSlot;
         this.booked_by = null;
     }
@@ -66,8 +66,11 @@ public class RoomRecord {
                 roomRecord = roomRecordList.get(i);
                 if (roomRecord.timeSlot.equals(list_of_time_slots[j])){
                     indicesToDelete.add(i);
-                    studentBookingList = studentBookingCount.get(roomRecord.booked_by);
-                    studentBookingList.remove(roomRecord.recordID);
+                    // updating the student booking count if the room was booked
+                    if (roomRecord.booked_by != null){
+                        studentBookingList = studentBookingCount.get(roomRecord.booked_by);
+                        studentBookingList.remove(roomRecord.recordID);
+                    }
                 }
             }
         }
@@ -90,17 +93,16 @@ public class RoomRecord {
     }
 
     public static String bookFromList(List<RoomRecord> roomRecordList, TimeSlot timeslot, ConcurrentHashMap<String, List<String>> studentBookingCount, String userID) {
-        boolean wasBooked = false;
         String confirmation = null;
         List<String> roomsBookedByStudent;
         for(RoomRecord roomRecord: roomRecordList){
             if (roomRecord.timeSlot.equals(timeslot)){
-                wasBooked = true;
                 roomsBookedByStudent = studentBookingCount.get(userID);
                 if (roomsBookedByStudent == null){
                     roomsBookedByStudent = new ArrayList<>();
                     roomsBookedByStudent.add(roomRecord.recordID);
                     studentBookingCount.put(userID, roomsBookedByStudent);
+                    confirmation = roomRecord.recordID;
                 } else {
                     if (roomRecord.booked_by != null){
                         return failurePrefix + "Room is already booked.";
@@ -117,7 +119,7 @@ public class RoomRecord {
                 break;
             }
         }
-        if (wasBooked){
+        if (confirmation != null){
             return successPrefix + confirmation;
         } else {
             return failurePrefix +"Room record could not be found.";

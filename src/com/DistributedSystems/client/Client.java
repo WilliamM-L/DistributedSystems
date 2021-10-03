@@ -109,7 +109,8 @@ public class Client {
                 timeSlots = TimeSlot.parseTimeSlots(timeSlotText);
                 reply = roomRecords.bookRoom(roomNum, date, timeSlots[0], userID);
                 if (reply.startsWith("Success")){
-                    bookingIDs.push(reply.split(" ")[0]);
+                    // second part of the message is the booking id
+                    bookingIDs.push(reply.split(" ")[1]);
                 }
                 break;
             case "getAvailableTimeSlot":
