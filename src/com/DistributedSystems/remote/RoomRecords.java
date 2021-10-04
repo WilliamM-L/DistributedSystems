@@ -27,40 +27,9 @@ import java.util.concurrent.TimeUnit;
 public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
     public final static String logsFolder = "logs\\server\\";
     public final String campusName;
-    private BufferedWriter logger;
-
-    public RoomRecords(String campusName)  throws RemoteException{
-        this.campusName = campusName;
-        try {
-            logger = new BufferedWriter(new FileWriter(logsFolder + campusName + ".txt"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MM-yyyy").toFormatter(Locale.ENGLISH);
-        // conversion ex: LocalDateTime date = LocalDateTime.from(LocalDate.parse("01-10-2021", formatter).atStartOfDay());
-
-        LocalDate date = LocalDate.parse("01-10-2021", formatter);
-        HashMap<Integer, List<RoomRecord>> entry = new HashMap<>();
-        List<RoomRecord> roomRecordList = new ArrayList<>();
-        roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(6,0))));
-        entry.put(1, roomRecordList);
-        roomRecords.put(date, entry);
-
-        date = date.plusDays(1);
-        entry = new HashMap<>();
-        roomRecordList = new ArrayList<>();
-        roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(6,0))));
-        entry.put(1, roomRecordList);
-        roomRecords.put(date, entry);
-
-        date = date.plusDays(1);
-        entry = new HashMap<>();
-        roomRecordList = new ArrayList<>();
-        roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(6,0))));
-        entry.put(1, roomRecordList);
-        roomRecords.put(date, entry);
-
-    }
+    private HashMap<String, Integer> externalSocketPorts;
+    private static BufferedWriter logger = null;
+    private static final DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MM-yyyy").toFormatter(Locale.ENGLISH);
 
     // ADMIN
     public String createRoom(int room_Number, LocalDate date, TimeSlot[] list_Of_Time_Slots) throws java.rmi.RemoteException{
@@ -160,36 +129,55 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
         return msg;
     }
     public String getAvailableTimeSlot(LocalDate date) throws java.rmi.RemoteException{
-        // todo only used to check yourself
-        return "time slot got";
+        // only used to check yourself
+        int numRoomRecordAvailable = 0;
+        HashMap<Integer, List<RoomRecord>> dayRooms = roomRecords.get(date);
+        for (Map.Entry<Integer, List<RoomRecord>> set: dayRooms.entrySet()){
+            numRoomRecordAvailable += set.getValue().size();
+        }
+        return campusName + ":" + numRoomRecordAvailable + " ";
     }
 
     public String getAvailableTimeSlot(String dateText) throws java.rmi.RemoteException{
         //todo send text to other objs' servers, then parse it for ourselves, call local method.
-        DatagramSocket aSocket = null;
-//        try {
-//            aSocket = new DatagramSocket();
-//            byte [] m = args[0].getBytes();
-//            InetAddress aHost = InetAddress.getByName(args[1]);
-//            int serverPort = 6789;
-//            DatagramPacket request =
-//                    new DatagramPacket(m,  args[0].length(), aHost, serverPort);
-//            aSocket.send(request);
-//            byte[] buffer = new byte[1000];
-//            DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
-//            aSocket.receive(reply);
-//            System.out.println("Reply: " + new String(reply.getData()));
-//        }catch (SocketException e){
-//            System.out.println("Socket: " + e.getMessage());
-//        }catch (IOException e){
-//            System.out.println("IO: " + e.getMessage());
-//        }finally {if(aSocket != null) aSocket.close();}
+        DatagramSocket datagramSocket = null;
+        int serverPort;
 
-        return "time slot got";
+        StringBuilder stringBuilder = new StringBuilder();
+        // fetching external data
+        try {
+            for (Map.Entry<String, Integer> set: externalSocketPorts.entrySet()){
+                datagramSocket = new DatagramSocket();
+                byte [] toSend = dateText.getBytes();
+                InetAddress host = InetAddress.getByName(null);
+                serverPort = set.getValue();
+                DatagramPacket request = new DatagramPacket(toSend,  dateText.length(), host, serverPort);
+                datagramSocket.send(request);
+                byte[] buffer = new byte[1000];
+                DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
+                datagramSocket.receive(reply);
+                stringBuilder.append(new String(buffer, 0, reply.getLength()));
+//                System.out.println("Reply: " + new String(reply.getData()));
+            }
+        }catch (SocketException e){
+            System.out.println("Socket: " + e.getMessage());
+        }catch (IOException e){
+            System.out.println("IO: " + e.getMessage());
+        }finally {if(datagramSocket != null) datagramSocket.close();}
+
+        //querying yourself
+        LocalDate date = LocalDate.parse(dateText, dateTimeFormatter);
+        stringBuilder.append(getAvailableTimeSlot(date));
+        String msg = stringBuilder.toString();
+
+        HashMap<String, String> paramNames = new HashMap<>();
+        paramNames.put("DateText", dateText);
+        log("getAvailableTimeSlot", paramNames, msg);
+        return msg;
 
     }
 
-    public String cancelBooking(String bookingID)  throws java.rmi.RemoteException{
+    public String cancelBooking(String bookingID, String userID)  throws java.rmi.RemoteException{
         //bookingID is the recordID
         String msg = RoomRecord.failurePrefix + "The booked room record could not be found, it was mostly likely deleted.";
 
@@ -198,32 +186,72 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
                 for(RoomRecord roomRecord: innerSet.getValue()){
                     if (roomRecord.recordID.equals(bookingID)){
                         roomRecord.booked_by = null;
-                        // todo update student booking count
+                        List<String> studentRecords = studentBookingCount.get(userID);
+                        studentRecords.remove(roomRecord.recordID);
                         msg = RoomRecord.successPrefix + "Booking cancelled.";
+                        break;
                     }
                 }
             }
         }
+
         HashMap<String, String> paramNames = new HashMap<>();
         paramNames.put("Booking ID", bookingID);
         log("Cancel Booking", paramNames, msg);
         return msg;
     }
 
-    private synchronized void log(String operation, HashMap<String, String> operationParams, String reply){
+    private static void log(String operation, HashMap<String, String> operationParams, String reply){
         LocalDateTime timeOfRequest = LocalDateTime.now();
         try {
-            logger.write("==========\n");
-            logger.write("Date: " + timeOfRequest + "\n");
-            logger.write("Operation: " + operation + "\n");
-            for (Map.Entry<String, String> set: operationParams.entrySet()){
-                logger.write(set.getKey() + " : " + set.getValue() + "\n");
+            synchronized (logger){
+                logger.write("==========\n");
+                logger.write("Operation: " + operation + "\n");
+                for (Map.Entry<String, String> set: operationParams.entrySet()){
+                    logger.write(set.getKey() + " : " + set.getValue() + "\n");
+                }
+                logger.write("Time at Request: " + timeOfRequest + "\n");
+                logger.write("Reply: " + reply + "\n");
+                logger.flush();
             }
-            logger.write("Reply: " + reply + "\n");
-            logger.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+    }
+
+    public RoomRecords(String campusName, HashMap<String, Integer> externalSocketPorts)  throws RemoteException{
+        this.campusName = campusName;
+        this.externalSocketPorts = externalSocketPorts;
+        try {
+            logger = new BufferedWriter(new FileWriter(logsFolder + campusName + ".txt"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MM-yyyy").toFormatter(Locale.ENGLISH);
+        // conversion ex: LocalDateTime date = LocalDateTime.from(LocalDate.parse("01-10-2021", formatter).atStartOfDay());
+
+        LocalDate date = LocalDate.parse("01-10-2021", formatter);
+        HashMap<Integer, List<RoomRecord>> entry = new HashMap<>();
+        List<RoomRecord> roomRecordList = new ArrayList<>();
+        roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(6,0))));
+        roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(8,0))));
+        entry.put(1, roomRecordList);
+        roomRecords.put(date, entry);
+
+        date = date.plusDays(1);
+        entry = new HashMap<>();
+        roomRecordList = new ArrayList<>();
+        roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(6,0))));
+        entry.put(1, roomRecordList);
+        roomRecords.put(date, entry);
+
+        date = date.plusDays(1);
+        entry = new HashMap<>();
+        roomRecordList = new ArrayList<>();
+        roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(6,0))));
+        entry.put(1, roomRecordList);
+        roomRecords.put(date, entry);
 
     }
 }

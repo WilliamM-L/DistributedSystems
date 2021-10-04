@@ -33,7 +33,7 @@ public class TimeSlot implements Serializable {
 
     public TimeSlot() {
         this.start = LocalTime.now();
-        this.end = start.plusHours(1);;
+        this.end = start.plusHours(1);
     }
 
     @Override

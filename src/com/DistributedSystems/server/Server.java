@@ -1,5 +1,6 @@
 package com.DistributedSystems.server;
 
+import com.DistributedSystems.local.RoomRecord;
 import com.DistributedSystems.remote.RoomRecords;
 
 import java.io.IOException;
@@ -7,16 +8,27 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.MalformedURLException;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Arrays;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.*;
 
 public class Server {
-    public static void main(String[] args) {
-        // todo start a server process for each campus! pass a string from args[] to decide how to call the obj
+    private static HashMap<String, Integer> socketPorts = new HashMap<>() {
+        {
+            put("DVL", 6789);
+            put("KKL", 6790);
+            put("WST", 6791);
+        }
+    };
+    private static final DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MM-yyyy").toFormatter(Locale.ENGLISH);
 
+    public static void main(String[] args) {
         String registryURL;
         String objectURL;
         try{
@@ -25,8 +37,15 @@ public class Server {
             int RMIPortNum = 1313;
             startRegistry(RMIPortNum);
             registryURL = "rmi://localhost:" + RMIPortNum;
+            int socketPort = socketPorts.get(campusName);
 
-            RoomRecords exportedRoomRecords = new RoomRecords(campusName);
+            HashMap<String, Integer> socketPortsToSend = new HashMap<>();
+            for(Map.Entry<String, Integer> set: socketPorts.entrySet()){
+                if (!set.getKey().equals(campusName)){
+                    socketPortsToSend.put(set.getKey(), set.getValue());
+                }
+            }
+            RoomRecords exportedRoomRecords = new RoomRecords(campusName, socketPortsToSend);
             objectURL = registryURL + "/RoomRecords" + campusName;
             Naming.rebind(objectURL, exportedRoomRecords);
 
@@ -35,25 +54,24 @@ public class Server {
             listRegistry(registryURL);
             System.out.println("RoomRecords Server ready.");
             // can have an infinite loop here since threads are created per connection for rmi
-            DatagramSocket aSocket = null;
-            try{
-                aSocket = new DatagramSocket(6789);
+            try (DatagramSocket aSocket = new DatagramSocket(socketPort)) {
                 // create socket at agreed port
                 byte[] buffer = new byte[1000];
-                while(true){
+                while (true) {
                     DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                     aSocket.receive(request);
-                    DatagramPacket reply = new DatagramPacket(request.getData(), request.getLength(),
-                            request.getAddress(), request.getPort());
+                    LocalDate dateToCheck = LocalDate.parse(new String(buffer, 0, request.getLength()).substring(0,10), dateTimeFormatter);
+                    String availabilities = exportedRoomRecords.getAvailableTimeSlot(dateToCheck);
+                    DatagramPacket reply = new DatagramPacket(availabilities.getBytes(), availabilities.length(), request.getAddress(), request.getPort());
                     aSocket.send(reply);
                 }
-            }catch (SocketException e){
+            } catch (SocketException e) {
                 System.out.println("Socket: " + e.getMessage());
                 throw e;
-            }catch (IOException e) {
+            } catch (IOException e) {
                 System.out.println("IO: " + e.getMessage());
                 throw e;
-            }finally {if(aSocket != null) aSocket.close();}
+            }
 
 
         }

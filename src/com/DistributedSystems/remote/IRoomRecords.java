@@ -19,8 +19,8 @@ public interface IRoomRecords extends Remote {
     String  deleteRoom (int room_Number, LocalDate date, TimeSlot[] list_Of_Time_Slots) throws java.rmi.RemoteException;
     // STUDENT
     String bookRoom(int roomNumber, LocalDate date, TimeSlot timeslot, String userID) throws java.rmi.RemoteException;
-    String getAvailableTimeSlot(LocalDate date) throws java.rmi.RemoteException;
+//    String getAvailableTimeSlot(LocalDate date) throws java.rmi.RemoteException;
     String getAvailableTimeSlot(String dateText) throws java.rmi.RemoteException;
-    String cancelBooking(String bookingID)  throws java.rmi.RemoteException;
+    String cancelBooking(String bookingID, String userID)  throws java.rmi.RemoteException;
 
 } //end interface

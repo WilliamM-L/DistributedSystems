@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 public class Client {
     private static final String instructionDir = "instructions";
     private static final DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MM-yyyy").toFormatter(Locale.ENGLISH);
-    private static Stack<String> bookingIDs = new Stack<>();
 
     private static void executeInstructionFile(String instructionFileName, String[] remoteObjectNames) throws IOException, NotBoundException {
         String path = instructionDir + "\\" + instructionFileName;
@@ -29,6 +28,7 @@ public class Client {
         IRoomRecords roomRecords = null;
         Lambdas.ChooseCampus evaluator = null;
         boolean campusServerFound = false;
+        Stack<String> bookingIDs = new Stack<>();
         try (fileReader) {
             BufferedReader br = new BufferedReader(fileReader);
 
@@ -55,7 +55,7 @@ public class Client {
                 }
 
                 if (campusServerFound){
-                    executeInstruction(args, roomRecords, admin, username);
+                    executeInstruction(args, roomRecords, admin, username, bookingIDs);
                 } else {
                     System.out.println("Sorry that campus is not available at the moment");
                 }
@@ -69,7 +69,7 @@ public class Client {
 
     }
 
-    private static void executeInstruction(String[] args, IRoomRecords roomRecords, boolean isAdmin, String userID) throws IOException {
+    private static void executeInstruction(String[] args, IRoomRecords roomRecords, boolean isAdmin, String userID, Stack<String> bookingIDs) throws IOException {
         int roomNum;
         String[] timeSlotText;
         TimeSlot[] timeSlots;
@@ -119,7 +119,7 @@ public class Client {
 
                 break;
             case "cancelBooking":
-                roomRecords.cancelBooking(bookingIDs.pop());
+                roomRecords.cancelBooking(bookingIDs.pop(), userID);
                 break;
             default:
                 System.out.println("Could not understand command");
@@ -144,32 +144,26 @@ public class Client {
             String registryURL = "rmi://localhost:" + portNum;
 
             // Waiting for the server to come online when they are started at the same time
-            TimeUnit.SECONDS.sleep(2);
+            TimeUnit.SECONDS.sleep(4);
 
             String[] remoteObjectNames = Naming.list(registryURL);
             System.out.println("Lookup completed");
 
+            String[] fileNames = new String[]{
+                    "AdminDVL1.txt",
+//                    "AdminKKL1.txt"
+            };
 
-            executeInstructionFile("Admin1.txt", remoteObjectNames);
-
-//            new Thread(() -> {
-//                try {
-//                    executeInstructions("Admin1.txt", remoteObjectNames);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                } catch (NotBoundException e) {
-//                    e.printStackTrace();
-//                }
-//            }).start();
-//            new Thread(() -> {
-//                try {
-//                    executeInstructions("Admin1.txt", remoteObjectNames);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                } catch (NotBoundException e) {
-//                    e.printStackTrace();
-//                }
-//            }).start();
+            for (int i = 0; i < fileNames.length; i++) {
+                int finalI = i;
+                new Thread(() -> {
+                    try {
+                        executeInstructionFile(fileNames[finalI], remoteObjectNames);
+                    } catch (IOException | NotBoundException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+            }
 
 
         }
