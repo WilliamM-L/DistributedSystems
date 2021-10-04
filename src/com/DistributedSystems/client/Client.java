@@ -108,7 +108,7 @@ public class Client {
                     date = LocalDate.parse(args[2], dateTimeFormatter);
                     timeSlotText = args[3].split("/");
                     timeSlots = TimeSlot.parseTimeSlots(timeSlotText);
-                    toLog.put("reply", roomRecords.createRoom(roomNum, date, timeSlots));
+                    toLog.put("reply", roomRecords.createRoom(roomNum, date, timeSlots, userID));
                     toLog.put("room number", args[1]);
                     toLog.put("date", args[2]);
                     toLog.put("time slots", args[3]);
@@ -122,7 +122,7 @@ public class Client {
                     date = LocalDate.parse(args[2], dateTimeFormatter);
                     timeSlotText = args[3].split("/");
                     timeSlots = TimeSlot.parseTimeSlots(timeSlotText);
-                    toLog.put("reply", roomRecords.deleteRoom(roomNum, date, timeSlots));
+                    toLog.put("reply", roomRecords.deleteRoom(roomNum, date, timeSlots, userID));
                     toLog.put("room number", args[1]);
                     toLog.put("date", args[2]);
                     toLog.put("time slots", args[3]);
@@ -145,7 +145,7 @@ public class Client {
                 break;
             case "getAvailableTimeSlot":
                 String dateText = args[1];
-                toLog.put("reply", roomRecords.getAvailableTimeSlot(dateText));
+                toLog.put("reply", roomRecords.getAvailableTimeSlot(dateText, userID));
                 toLog.put("date", dateText);
                 break;
             case "cancelBooking":
@@ -166,6 +166,7 @@ public class Client {
     public static void main(String[] args) throws NotBoundException, IOException, InterruptedException {
         try {
             // TODO: 2021-10-03 add userId to all server/client logs
+            // todo Add the campus name to RecordIds so the client can find the right obj to to cancel it!
 
             //todo generate logs for both clients and servers
             //todo sync methods so multiple can edit at once

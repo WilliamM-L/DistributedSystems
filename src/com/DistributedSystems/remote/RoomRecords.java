@@ -32,7 +32,7 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
     private static final DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MM-yyyy").toFormatter(Locale.ENGLISH);
 
     // ADMIN
-    public String createRoom(int room_Number, LocalDate date, TimeSlot[] list_Of_Time_Slots) throws java.rmi.RemoteException{
+    public String createRoom(int room_Number, LocalDate date, TimeSlot[] list_Of_Time_Slots, String userID) throws java.rmi.RemoteException{
         List<RoomRecord> roomRecordList, newRoomRecordList;
         HashMap<Integer, List<RoomRecord>> dayRooms = roomRecords.get(date);
         String msg;
@@ -59,7 +59,7 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
         paramNames.put("room number", Integer.toString(room_Number));
         paramNames.put("Date at which to create room records", date.toString());
         paramNames.put("Time slots", Arrays.toString(list_Of_Time_Slots));
-        log("Create Room", paramNames, msg);
+        log("Create Room", paramNames, msg, userID);
         return msg;
         // try waiting to see if middleware starts a thread per request: it does!
 //        try {
@@ -68,7 +68,7 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
 //            System.out.println(e.getStackTrace());
 //        }
     }
-    public String  deleteRoom (int roomNumber, LocalDate date, TimeSlot[] list_Of_Time_Slots) throws java.rmi.RemoteException{
+    public String  deleteRoom (int roomNumber, LocalDate date, TimeSlot[] list_Of_Time_Slots, String userID) throws java.rmi.RemoteException{
         List<RoomRecord> roomRecordList = null;
         HashMap<Integer, List<RoomRecord>> dayRooms = roomRecords.get(date);
         boolean leaveNow = false;
@@ -94,7 +94,7 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
         paramNames.put("room number", Integer.toString(roomNumber));
         paramNames.put("Date at which to delete room records", date.toString());
         paramNames.put("Time slots", Arrays.toString(list_Of_Time_Slots));
-        log("Delete Room", paramNames, msg);
+        log("Delete Room", paramNames, msg, userID);
         return msg;
     }
     // STUDENT
@@ -125,7 +125,7 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
         paramNames.put("Date at which to book the room", date.toString());
         paramNames.put("Time slot", timeslot.toString());
         paramNames.put("User ID", userID);
-        log("Book Room", paramNames, msg);
+        log("Book Room", paramNames, msg, userID);
         return msg;
     }
     public String getAvailableTimeSlot(LocalDate date) throws java.rmi.RemoteException{
@@ -138,7 +138,7 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
         return campusName + ":" + numRoomRecordAvailable + " ";
     }
 
-    public String getAvailableTimeSlot(String dateText) throws java.rmi.RemoteException{
+    public String getAvailableTimeSlot(String dateText, String userID) throws java.rmi.RemoteException{
         //todo send text to other objs' servers, then parse it for ourselves, call local method.
         DatagramSocket datagramSocket = null;
         int serverPort;
@@ -172,7 +172,7 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
 
         HashMap<String, String> paramNames = new HashMap<>();
         paramNames.put("DateText", dateText);
-        log("getAvailableTimeSlot", paramNames, msg);
+        log("getAvailableTimeSlot", paramNames, msg, userID);
         return msg;
 
     }
@@ -197,15 +197,16 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
 
         HashMap<String, String> paramNames = new HashMap<>();
         paramNames.put("Booking ID", bookingID);
-        log("Cancel Booking", paramNames, msg);
+        log("Cancel Booking", paramNames, msg, userID);
         return msg;
     }
 
-    private static void log(String operation, HashMap<String, String> operationParams, String reply){
+    private static void log(String operation, HashMap<String, String> operationParams, String reply, String userID){
         LocalDateTime timeOfRequest = LocalDateTime.now();
         try {
             synchronized (logger){
                 logger.write("==========\n");
+                logger.write("User: " + userID + "\n");
                 logger.write("Operation: " + operation + "\n");
                 for (Map.Entry<String, String> set: operationParams.entrySet()){
                     logger.write(set.getKey() + " : " + set.getValue() + "\n");
