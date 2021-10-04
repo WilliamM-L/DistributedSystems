@@ -3,37 +3,37 @@ Operation: Create Room
 Time slots : [{start=10:00, end=11:00}, {start=13:00, end=14:00}]
 room number : 5
 Date at which to create room records : 2021-10-03
-Time at Request: 2021-10-03T21:38:08.900878200
+Time at Request: 2021-10-03T23:56:04.934738500
 Reply: Success: All room records added.
 ==========
 Operation: Create Room
 Time slots : [{start=08:00, end=11:30}, {start=15:00, end=16:00}]
 room number : 5
 Date at which to create room records : 2021-10-03
-Time at Request: 2021-10-03T21:38:08.903877100
+Time at Request: 2021-10-03T23:56:04.944739
 Reply: Success: The conflicting timeslots were ignored, the valid ones were added.
 ==========
 Operation: Delete Room
 Time slots : [{start=13:00, end=14:00}]
 room number : 5
 Date at which to delete room records : 2021-10-03
-Time at Request: 2021-10-03T21:38:08.906880100
-Reply: 1 out of 1 room records were deleted.
+Time at Request: 2021-10-03T23:56:04.948738700
+Reply: Success: 1 out of 1 room records were deleted.
 ==========
 Operation: Book Room
 room number : 5
 User ID : DVLA1111
 Time slot : {start=10:00, end=11:00}
 Date at which to book the room : 2021-10-03
-Time at Request: 2021-10-03T21:38:08.909880800
-Reply: Success: RR263025
+Time at Request: 2021-10-03T23:56:04.951739
+Reply: Success: RR17914
 ==========
 Operation: getAvailableTimeSlot
 DateText : 01-10-2021
-Time at Request: 2021-10-03T21:38:08.914878400
+Time at Request: 2021-10-03T23:56:04.957739900
 Reply: WST:2 KKL:2 DVL:2 
 ==========
 Operation: Cancel Booking
-Booking ID : RR263025
-Time at Request: 2021-10-03T21:38:08.916877700
+Booking ID : RR17914
+Time at Request: 2021-10-03T23:56:04.959739200
 Reply: Success: Booking cancelled.

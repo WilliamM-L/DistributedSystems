@@ -78,17 +78,11 @@ public class RoomRecord {
             roomRecordList.remove(index);
         }
         msg = indicesToDelete.size() + " out of "+ list_of_time_slots.length + " room records were deleted.";
-
-//        int cout=0;
-//        roomRecordList.removeIf( roomRecord -> {
-//            boolean delete = false;
-//            for (int j = 0; j < list_of_time_slots.length; j++) {
-//                if (roomRecord.timeSlot.equals(list_of_time_slots[j])){
-//                    delete = true;
-//                }
-//            }
-//            return delete;
-//        });
+        if (indicesToDelete.size() == 0){
+            msg =  failurePrefix + msg;
+        } else {
+            msg = successPrefix + msg;
+        }
         return msg;
     }
 
@@ -127,16 +121,8 @@ public class RoomRecord {
     }
 
     private boolean intersect(RoomRecord roomRecord) {
-        // go with smallest time slot
         boolean startWithinTimeSlot;
         boolean endWithinTimeSlot;
-//        if (MINUTES.between(this.timeSlot.start, this.timeSlot.end) < MINUTES.between(this.timeSlot.start, this.timeSlot.end)){
-//            startWithinTimeSlot = this.timeSlot.start.isAfter(roomRecord.timeSlot.start) && this.timeSlot.start.isBefore(roomRecord.timeSlot.end);
-//            endWithinTimeSlot = this.timeSlot.end.isAfter(roomRecord.timeSlot.start) && this.timeSlot.end.isBefore(roomRecord.timeSlot.end);
-//        } else {
-//            startWithinTimeSlot = roomRecord.timeSlot.start.isAfter(this.timeSlot.start) && this.timeSlot.start.isBefore(roomRecord.timeSlot.end);
-//            endWithinTimeSlot = this.timeSlot.end.isAfter(roomRecord.timeSlot.start) && this.timeSlot.end.isBefore(roomRecord.timeSlot.end);
-//        }
         startWithinTimeSlot = this.timeSlot.start.isAfter(roomRecord.timeSlot.start) && this.timeSlot.start.isBefore(roomRecord.timeSlot.end);
         endWithinTimeSlot = this.timeSlot.end.isAfter(roomRecord.timeSlot.start) && this.timeSlot.end.isBefore(roomRecord.timeSlot.end);
         boolean timeSlotEntirelyWithin = this.timeSlot.start.isBefore(roomRecord.timeSlot.start) && this.timeSlot.end.isAfter(roomRecord.timeSlot.end);
