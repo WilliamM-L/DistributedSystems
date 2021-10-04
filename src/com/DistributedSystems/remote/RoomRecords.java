@@ -10,19 +10,14 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.nio.charset.Charset;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
     public final static String logsFolder = "logs\\server\\";
@@ -47,27 +42,28 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
 
         if (roomRecordList == null){
             roomRecordList =  RoomRecord.makeFromTimeSlotList(list_Of_Time_Slots);
+            dayRooms.put(room_Number, roomRecordList);
+            // if there's only one entry, it used to be null
+            if (dayRooms.size() == 1){
+                roomRecords.put(date, dayRooms);
+            }
             msg = RoomRecord.successPrefix + "All room records added.";
         }else {
             newRoomRecordList =  RoomRecord.makeFromTimeSlotList(list_Of_Time_Slots);
-            msg = RoomRecord.addValidRoomRecords(roomRecordList, newRoomRecordList);
+            synchronized (roomRecordList){
+                msg = RoomRecord.addValidRoomRecords(roomRecordList, newRoomRecordList);
+            }
         }
+        // put only if they did not exist
 
-        dayRooms.put(room_Number, roomRecordList);
-        roomRecords.put(date, dayRooms);
         HashMap<String, String> paramNames = new HashMap<>();
         paramNames.put("room number", Integer.toString(room_Number));
         paramNames.put("Date at which to create room records", date.toString());
         paramNames.put("Time slots", Arrays.toString(list_Of_Time_Slots));
         log("Create Room", paramNames, msg, userID);
         return msg;
-        // try waiting to see if middleware starts a thread per request: it does!
-//        try {
-//            TimeUnit.SECONDS.sleep(5);
-//        }catch (Exception e){
-//            System.out.println(e.getStackTrace());
-//        }
     }
+
     public String  deleteRoom (int roomNumber, LocalDate date, TimeSlot[] list_Of_Time_Slots, String userID) throws java.rmi.RemoteException{
         List<RoomRecord> roomRecordList = null;
         HashMap<Integer, List<RoomRecord>> dayRooms = roomRecords.get(date);
@@ -86,7 +82,10 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
             if (roomRecordList == null){
                 msg = RoomRecord.failurePrefix + "No room records under room number: " + roomNumber;
             }else {
-                msg = RoomRecord.deleteRoomRecordsFromTimeSlots(roomRecordList, list_Of_Time_Slots, studentBookingCount);
+                synchronized (roomRecordList){
+                    // the individual records are deleted, but the lists and maps remain
+                    msg = RoomRecord.deleteRoomRecordsFromTimeSlots(roomRecordList, list_Of_Time_Slots, studentBookingCount);
+                }
             }
         }
 
