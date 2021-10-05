@@ -10,20 +10,22 @@ public class RoomRecord {
     public String recordID;
     public TimeSlot timeSlot;
     public String booked_by;
+    public String campusName;
     public final static String successPrefix = "Success: ";
     public final static String failurePrefix = "Failed: ";
 
-    public static List<RoomRecord> makeFromTimeSlotList(TimeSlot[] timeSlots){
+    public static List<RoomRecord> makeFromTimeSlotList(TimeSlot[] timeSlots, String campusName){
         List<RoomRecord> result = new ArrayList<>(timeSlots.length);
         for(TimeSlot timeSlot: timeSlots){
-            result.add(new RoomRecord(timeSlot));
+            result.add(new RoomRecord(timeSlot, campusName));
         }
 
         return  result;
     }
 
-    public RoomRecord(TimeSlot timeSlot) {
-        this.recordID = "RR" + (int)Math.floor(Math.random()*1000000);
+    public RoomRecord(TimeSlot timeSlot, String campusName) {
+        this.campusName = campusName;
+        this.recordID = "RR" + (int)Math.floor(Math.random()*1000000) + campusName;
         this.timeSlot = timeSlot;
         this.booked_by = null;
     }
@@ -121,10 +123,8 @@ public class RoomRecord {
     }
 
     private boolean intersect(RoomRecord roomRecord) {
-        boolean startWithinTimeSlot;
-        boolean endWithinTimeSlot;
-        startWithinTimeSlot = this.timeSlot.start.isAfter(roomRecord.timeSlot.start) && this.timeSlot.start.isBefore(roomRecord.timeSlot.end);
-        endWithinTimeSlot = this.timeSlot.end.isAfter(roomRecord.timeSlot.start) && this.timeSlot.end.isBefore(roomRecord.timeSlot.end);
+        boolean startWithinTimeSlot = this.timeSlot.start.isAfter(roomRecord.timeSlot.start) && this.timeSlot.start.isBefore(roomRecord.timeSlot.end);
+        boolean endWithinTimeSlot = this.timeSlot.end.isAfter(roomRecord.timeSlot.start) && this.timeSlot.end.isBefore(roomRecord.timeSlot.end);
         boolean timeSlotEntirelyWithin = this.timeSlot.start.isBefore(roomRecord.timeSlot.start) && this.timeSlot.end.isAfter(roomRecord.timeSlot.end);
         return startWithinTimeSlot || endWithinTimeSlot || timeSlotEntirelyWithin;
     }

@@ -4,7 +4,7 @@ Operation: Create Room
 Time slots : [{start=10:00, end=11:00}, {start=13:00, end=14:00}]
 room number : 5
 Date at which to create room records : 2021-10-03
-Time at Request: 2021-10-04T18:41:28.597793100
+Time at Request: 2021-10-04T18:47:24.935916500
 Reply: Success: All room records added.
 ==========
 User: DVLA1111
@@ -12,7 +12,7 @@ Operation: Create Room
 Time slots : [{start=08:00, end=11:30}, {start=15:00, end=16:00}]
 room number : 5
 Date at which to create room records : 2021-10-03
-Time at Request: 2021-10-04T18:41:28.605793600
+Time at Request: 2021-10-04T18:47:24.944917200
 Reply: Success: The conflicting timeslots were ignored, the valid ones were added.
 ==========
 User: DVLA1111
@@ -20,7 +20,7 @@ Operation: Delete Room
 Time slots : [{start=13:00, end=14:00}]
 room number : 5
 Date at which to delete room records : 2021-10-03
-Time at Request: 2021-10-04T18:41:28.609791500
+Time at Request: 2021-10-04T18:47:24.948917800
 Reply: Success: 1 out of 1 room records were deleted.
 ==========
 User: DVLA1111
@@ -29,17 +29,17 @@ room number : 5
 User ID : DVLA1111
 Time slot : {start=10:00, end=11:00}
 Date at which to book the room : 2021-10-03
-Time at Request: 2021-10-04T18:41:28.611791500
-Reply: Success: RR663733
+Time at Request: 2021-10-04T18:47:24.951918200
+Reply: Success: RR910761
 ==========
 User: DVLA1111
 Operation: getAvailableTimeSlot
 DateText : 01-10-2021
-Time at Request: 2021-10-04T18:41:28.618791500
+Time at Request: 2021-10-04T18:47:24.957916300
 Reply: WST:2 KKL:2 DVL:2 
 ==========
 User: DVLA1111
 Operation: Cancel Booking
-Booking ID : RR663733
-Time at Request: 2021-10-04T18:41:28.619791200
+Booking ID : RR910761
+Time at Request: 2021-10-04T18:47:24.959918400
 Reply: Success: Booking cancelled.

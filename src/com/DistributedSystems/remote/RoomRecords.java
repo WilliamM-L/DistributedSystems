@@ -41,7 +41,7 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
         }
 
         if (roomRecordList == null){
-            roomRecordList =  RoomRecord.makeFromTimeSlotList(list_Of_Time_Slots);
+            roomRecordList =  RoomRecord.makeFromTimeSlotList(list_Of_Time_Slots, campusName);
             dayRooms.put(room_Number, roomRecordList);
             // if there's only one entry, it used to be null
             if (dayRooms.size() == 1){
@@ -49,7 +49,7 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
             }
             msg = RoomRecord.successPrefix + "All room records added.";
         }else {
-            newRoomRecordList =  RoomRecord.makeFromTimeSlotList(list_Of_Time_Slots);
+            newRoomRecordList =  RoomRecord.makeFromTimeSlotList(list_Of_Time_Slots, campusName);
             synchronized (roomRecordList){
                 msg = RoomRecord.addValidRoomRecords(roomRecordList, newRoomRecordList);
             }
@@ -234,22 +234,22 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
         LocalDate date = LocalDate.parse("01-10-2021", formatter);
         HashMap<Integer, List<RoomRecord>> entry = new HashMap<>();
         List<RoomRecord> roomRecordList = new ArrayList<>();
-        roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(6,0))));
-        roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(8,0))));
+        roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(6,0)), campusName));
+        roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(8,0)), campusName));
         entry.put(1, roomRecordList);
         roomRecords.put(date, entry);
 
         date = date.plusDays(1);
         entry = new HashMap<>();
         roomRecordList = new ArrayList<>();
-        roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(6,0))));
+        roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(6,0)), campusName));
         entry.put(1, roomRecordList);
         roomRecords.put(date, entry);
 
         date = date.plusDays(1);
         entry = new HashMap<>();
         roomRecordList = new ArrayList<>();
-        roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(6,0))));
+        roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(6,0)), campusName));
         entry.put(1, roomRecordList);
         roomRecords.put(date, entry);
 

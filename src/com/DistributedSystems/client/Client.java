@@ -4,10 +4,6 @@ import com.DistributedSystems.local.TimeSlot;
 import com.DistributedSystems.remote.IRoomRecords;
 
 import java.io.*;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
 import java.rmi.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,13 +41,15 @@ public class Client {
 
                 if (args[0].equals("bookRoom")){
                     evaluator = (remoteObjectName, args_) -> remoteObjectName.endsWith(args_[1]);
+                } else if (args[0].equals("cancelBooking")){
+                    evaluator = (remoteObjectName, args_) -> remoteObjectName.endsWith(bookingIDs.peek());
                 } else {
                     evaluator = (remoteObjectName, args_) -> remoteObjectName.endsWith(campus);
                 }
 
                 campusServerFound = false;
                 for (String remoteObjectName : remoteObjectNames){
-                    if (evaluator.chooseCampus(remoteObjectName, args)){
+                    if (evaluator.verifyCampus(remoteObjectName, args)){
                         roomRecords = (IRoomRecords)Naming.lookup(remoteObjectName);
                         campusServerFound = true;
                     }

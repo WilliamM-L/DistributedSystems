@@ -16,10 +16,10 @@ public class test {
                 try {
 //                    TimeUnit.SECONDS.sleep(1);
                     List<String> list = map.get(1);
-                synchronized (list){
-                    TimeUnit.SECONDS.sleep(1);
-                    list.add("b");
-                }
+                    synchronized (list){
+                        TimeUnit.SECONDS.sleep(2);
+                        list.add("b");
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -30,17 +30,16 @@ public class test {
 //            synchronized (map){
                 try {
                     List<String> list = map.get(1);
-                synchronized (list){
-                    System.out.println("list before deletion:" + list);
-                    list.remove("b");
-                }
+                    synchronized (list){
+                        System.out.println("list before deletion:" + list);
+                        list.remove("b");
+                        System.out.println("list after deletion:" + list);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 //            }
         }).start();
-        TimeUnit.SECONDS.sleep(2);
-        System.out.println(map.get(1));
 
     }
 }
