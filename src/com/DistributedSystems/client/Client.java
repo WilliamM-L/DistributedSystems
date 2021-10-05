@@ -25,7 +25,7 @@ public class Client {
         String[] args = null;
         IRoomRecords roomRecords = null;
         Lambdas.ChooseCampus evaluator = null;
-        boolean campusServerFound = false;
+        boolean campusServerFound;
         Stack<String> bookingIDs = new Stack<>();
         try (fileReader) {
             BufferedReader br = new BufferedReader(fileReader);
@@ -47,15 +47,13 @@ public class Client {
                     evaluator = (remoteObjectName, args_) -> remoteObjectName.endsWith(campus);
                 }
 
-                campusServerFound = false;
                 for (String remoteObjectName : remoteObjectNames){
                     if (evaluator.verifyCampus(remoteObjectName, args)){
                         roomRecords = (IRoomRecords)Naming.lookup(remoteObjectName);
-                        campusServerFound = true;
                     }
                 }
 
-                if (campusServerFound){
+                if (roomRecords != null){
                     log(logger, executeInstruction(args, roomRecords, admin, username, bookingIDs));
                 } else {
                     System.out.println("Sorry that campus is not available at the moment");

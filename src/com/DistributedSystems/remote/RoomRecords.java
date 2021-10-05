@@ -115,7 +115,9 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
             if (roomRecordList == null){
                 msg = RoomRecord.failurePrefix + "No room records under room number: " + roomNumber;
             }else {
-                msg = RoomRecord.bookFromList(roomRecordList, timeslot, studentBookingCount, userID);
+                synchronized (roomRecordList){
+                    msg = RoomRecord.bookFromList(roomRecordList, timeslot, studentBookingCount, userID);
+                }
             }
         }
 
@@ -127,12 +129,16 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
         log("Book Room", paramNames, msg, userID);
         return msg;
     }
+
     public String getAvailableTimeSlot(LocalDate date) throws java.rmi.RemoteException{
         // only used to check yourself
         int numRoomRecordAvailable = 0;
         HashMap<Integer, List<RoomRecord>> dayRooms = roomRecords.get(date);
         for (Map.Entry<Integer, List<RoomRecord>> set: dayRooms.entrySet()){
-            numRoomRecordAvailable += set.getValue().size();
+            List<RoomRecord> roomRecords = set.getValue();
+            synchronized (roomRecords){
+                numRoomRecordAvailable += roomRecords.size();
+            }
         }
         return campusName + ":" + numRoomRecordAvailable + " ";
     }
@@ -182,13 +188,16 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
 
         for (Map.Entry<LocalDate, HashMap<Integer, List<RoomRecord>>> outerSet: roomRecords.entrySet()){
             for(Map.Entry<Integer, List<RoomRecord>> innerSet: outerSet.getValue().entrySet()){
-                for(RoomRecord roomRecord: innerSet.getValue()){
-                    if (roomRecord.recordID.equals(bookingID)){
-                        roomRecord.booked_by = null;
-                        List<String> studentRecords = studentBookingCount.get(userID);
-                        studentRecords.remove(roomRecord.recordID);
-                        msg = RoomRecord.successPrefix + "Booking cancelled.";
-                        break;
+                List<RoomRecord> roomRecords = innerSet.getValue();
+                synchronized (roomRecords){
+                    for(RoomRecord roomRecord: roomRecords){
+                        if (roomRecord.recordID.equals(bookingID)){
+                            roomRecord.booked_by = null;
+                            List<String> studentRecords = studentBookingCount.get(userID);
+                            studentRecords.remove(roomRecord.recordID);
+                            msg = RoomRecord.successPrefix + "Booking cancelled.";
+                            break;
+                        }
                     }
                 }
             }
