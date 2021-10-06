@@ -33,10 +33,15 @@ public class Client {
 //                    "AdminDVL1.txt",
 //                    "StudentDVL1.txt",
 //                    "AdminKKL1.txt"
-                    // test case 1 - trying to book the same room in 2 threads.
+                    // test case 1 - trying to book the same room in 3 threads. Testing the booking capacity as well
                     "TestCase1A.txt",
                     "TestCase1S.txt",
                     "TestCase1S2.txt",
+                    // test case 2 - same thing, but test delete and see if it properly updates the student booking list
+
+                    // test case 3 - doing a bunch of stuff at once, kept same conflict, activity across servers,
+
+                    //
             };
 
             for (int i = 0; i < fileNames.length; i++) {

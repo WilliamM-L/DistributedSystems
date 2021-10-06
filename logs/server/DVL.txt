@@ -5,7 +5,16 @@ room number : 1
 User ID : DVLS00001
 Time slot : {start=06:00, end=07:00}
 Date at which to book the room : 2021-10-31
-Time at Request: 2021-10-05T22:19:46.443840900
+Time at Request: 2021-10-05T22:34:01.659859900
+Reply: Success: RR335597DVL
+==========
+User: DVLA00001
+Operation: Book Room
+room number : 1
+User ID : DVLA00001
+Time slot : {start=06:00, end=07:00}
+Date at which to book the room : 2021-10-31
+Time at Request: 2021-10-05T22:34:01.659859900
 Reply: Failed: Room is already booked.
 ==========
 User: DVLS00002
@@ -14,14 +23,64 @@ room number : 1
 User ID : DVLS00002
 Time slot : {start=06:00, end=07:00}
 Date at which to book the room : 2021-10-31
-Time at Request: 2021-10-05T22:19:46.443840900
+Time at Request: 2021-10-05T22:34:01.659859900
 Reply: Failed: Room is already booked.
 ==========
 User: DVLA00001
+Operation: Create Room
+Time slots : [{start=10:00, end=11:00}, {start=13:00, end=14:00}, {start=15:00, end=15:30}, {start=16:00, end=16:30}]
+room number : 5
+Date at which to create room records : 2021-10-03
+Time at Request: 2021-10-05T22:34:01.670858400
+Reply: Success: All room records added.
+==========
+User: DVLA00001
 Operation: Book Room
-room number : 1
+room number : 5
 User ID : DVLA00001
-Time slot : {start=06:00, end=07:00}
-Date at which to book the room : 2021-10-31
-Time at Request: 2021-10-05T22:19:46.443840900
-Reply: Success: RR323801DVL
+Time slot : {start=10:00, end=11:00}
+Date at which to book the room : 2021-10-03
+Time at Request: 2021-10-05T22:34:01.671860700
+Reply: Success: RR780230DVL
+==========
+User: DVLA00001
+Operation: Book Room
+room number : 5
+User ID : DVLA00001
+Time slot : {start=13:00, end=14:00}
+Date at which to book the room : 2021-10-03
+Time at Request: 2021-10-05T22:34:01.672860
+Reply: Success: RR644515DVL
+==========
+User: DVLA00001
+Operation: Book Room
+room number : 5
+User ID : DVLA00001
+Time slot : {start=15:00, end=15:30}
+Date at which to book the room : 2021-10-03
+Time at Request: 2021-10-05T22:34:01.674860
+Reply: Success: RR131479DVL
+==========
+User: DVLA00001
+Operation: Book Room
+room number : 5
+User ID : DVLA00001
+Time slot : {start=16:00, end=16:30}
+Date at which to book the room : 2021-10-03
+Time at Request: 2021-10-05T22:34:01.675863300
+Reply: Failed: You have booked 3 rooms already, come back next week!
+==========
+User: DVLA00001
+Operation: Cancel Booking
+Booking ID : RR131479DVL
+Time at Request: 2021-10-05T22:34:01.676860300
+Reply: Success: Booking cancelled.
+==========
+User: DVLA00001
+Operation: Book Room
+room number : 5
+User ID : DVLA00001
+Time slot : {start=16:00, end=16:30}
+Date at which to book the room : 2021-10-03
+Time at Request: 2021-10-05T22:34:01.677858500
+Reply: Success: RR731146DVL

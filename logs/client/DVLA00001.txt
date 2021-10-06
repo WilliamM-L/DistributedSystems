@@ -3,6 +3,60 @@ date : 31-10-2021
 room number : 1
 time slots : 06:00-07:00
 Command : bookRoom
-reply : Success: RR323801DVL
+reply : Failed: Room is already booked.
 userID : DVLA00001
-Time at Request: 2021-10-05T22:19:46.449841900
+Time at Request: 2021-10-05T22:34:01.666859500
+==========
+date : 03-10-2021
+room number : 5
+time slots : 10:00-11:00/13:00-14:00/15:00-15:30/16:00-16:30
+Command : createRoom
+reply : Success: All room records added.
+userID : DVLA00001
+Time at Request: 2021-10-05T22:34:01.670858400
+==========
+date : 03-10-2021
+room number : 5
+time slots : 10:00-11:00
+Command : bookRoom
+reply : Success: RR780230DVL
+userID : DVLA00001
+Time at Request: 2021-10-05T22:34:01.671860700
+==========
+date : 03-10-2021
+room number : 5
+time slots : 13:00-14:00
+Command : bookRoom
+reply : Success: RR644515DVL
+userID : DVLA00001
+Time at Request: 2021-10-05T22:34:01.673859900
+==========
+date : 03-10-2021
+room number : 5
+time slots : 15:00-15:30
+Command : bookRoom
+reply : Success: RR131479DVL
+userID : DVLA00001
+Time at Request: 2021-10-05T22:34:01.674860
+==========
+date : 03-10-2021
+room number : 5
+time slots : 16:00-16:30
+Command : bookRoom
+reply : Failed: You have booked 3 rooms already, come back next week!
+userID : DVLA00001
+Time at Request: 2021-10-05T22:34:01.676860300
+==========
+Command : cancelBooking
+reply : Success: Booking cancelled.
+userID : DVLA00001
+bookingID : RR131479DVL
+Time at Request: 2021-10-05T22:34:01.676860300
+==========
+date : 03-10-2021
+room number : 5
+time slots : 16:00-16:30
+Command : bookRoom
+reply : Success: RR731146DVL
+userID : DVLA00001
+Time at Request: 2021-10-05T22:34:01.678859800

@@ -3,6 +3,6 @@ date : 31-10-2021
 room number : 1
 time slots : 06:00-07:00
 Command : bookRoom
-reply : Failed: Room is already booked.
+reply : Success: RR335597DVL
 userID : DVLS00001
-Time at Request: 2021-10-05T22:19:46.449841900
+Time at Request: 2021-10-05T22:34:01.666859500

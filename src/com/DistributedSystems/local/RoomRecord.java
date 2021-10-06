@@ -64,12 +64,12 @@ public class RoomRecord {
         RoomRecord roomRecord;
         List<String> studentBookingList;
         for (int i = 0; i < roomRecordList.size(); i++) {
-            for (int j = 0; j < list_of_time_slots.length; j++) {
-                roomRecord = roomRecordList.get(i);
-                if (roomRecord.timeSlot.equals(list_of_time_slots[j])){
+            roomRecord = roomRecordList.get(i);
+            for (TimeSlot timeSlot : list_of_time_slots) {
+                if (roomRecord.timeSlot.equals(timeSlot)) {
                     indicesToDelete.add(i);
                     // updating the student booking count if the room was booked
-                    if (roomRecord.booked_by != null){
+                    if (roomRecord.booked_by != null) {
                         studentBookingList = studentBookingCount.get(roomRecord.booked_by);
                         studentBookingList.remove(roomRecord.recordID);
                     }
@@ -98,11 +98,12 @@ public class RoomRecord {
                     return failurePrefix + "Room is already booked.";
                 } else {
                     if (roomsBookedByStudent == null) {
+                        roomRecord.booked_by = userID;
+                        confirmation = roomRecord.recordID;
+                        // IMPORTANT : BOOKINGID IS JUST THE RECORDID FOR SIMPLICITY!
                         roomsBookedByStudent = new ArrayList<>();
                         roomsBookedByStudent.add(roomRecord.recordID);
                         studentBookingCount.put(userID, roomsBookedByStudent);
-                        confirmation = roomRecord.recordID;
-                        roomRecord.booked_by = userID;
                         return successPrefix + confirmation;
                     } else {
                         if (roomsBookedByStudent.size() < 3) {
