@@ -1,0 +1,35 @@
+==========
+Client ignored command : Could not understand command
+Command : wait
+userID : KKLS00002
+Time at Request: 2021-10-06T14:35:32.238931800
+==========
+date : 03-10-2021
+room number : 7
+time slots : 16:45-17:45
+Command : bookRoom
+reply : Success: RR232707DVL
+userID : KKLS00002
+Time at Request: 2021-10-06T14:35:32.240931300
+==========
+date : 03-10-2021
+room number : 7
+time slots : 16:45-17:45
+Command : bookRoom
+reply : Success: RR914871KKL
+userID : KKLS00002
+Time at Request: 2021-10-06T14:35:32.241930500
+==========
+date : 03-10-2021
+room number : 7
+time slots : 16:45-17:45
+Command : bookRoom
+reply : Success: RR408686WST
+userID : KKLS00002
+Time at Request: 2021-10-06T14:35:32.243931
+==========
+date : 07-10-2021
+Command : getAvailableTimeSlot
+reply : WST:0 DVL:0 KKL:0 
+userID : KKLS00002
+Time at Request: 2021-10-06T14:35:32.249933300

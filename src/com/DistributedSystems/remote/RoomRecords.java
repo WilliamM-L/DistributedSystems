@@ -134,12 +134,15 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
         // only used to check yourself
         int numRoomRecordAvailable = 0;
         HashMap<Integer, List<RoomRecord>> dayRooms = roomRecords.get(date);
-        for (Map.Entry<Integer, List<RoomRecord>> set: dayRooms.entrySet()){
-            List<RoomRecord> roomRecords = set.getValue();
-            synchronized (roomRecords){
-                numRoomRecordAvailable += roomRecords.size();
+        if (dayRooms != null){
+            for (Map.Entry<Integer, List<RoomRecord>> set: dayRooms.entrySet()){
+                List<RoomRecord> roomRecords = set.getValue();
+                synchronized (roomRecords){
+                    numRoomRecordAvailable += roomRecords.size();
+                }
             }
         }
+
         return campusName + ":" + numRoomRecordAvailable + " ";
     }
 

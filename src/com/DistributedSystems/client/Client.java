@@ -19,7 +19,7 @@ public class Client {
 
     public static void main(String[] args) throws NotBoundException, IOException, InterruptedException {
         try {
-            //todo sync methods so multiple can edit at once
+            //todo sync access to the studentBooking lists, they could be accessed by threads with different roomRecord lists.
             int portNum = 1313;
             String registryURL = "rmi://localhost:" + portNum;
 
@@ -33,13 +33,20 @@ public class Client {
 //                    "AdminDVL1.txt",
 //                    "StudentDVL1.txt",
 //                    "AdminKKL1.txt"
-                    // test case 1 - trying to book the same room in 3 threads. Testing the booking capacity as well
-                    "TestCase1A.txt",
-                    "TestCase1S.txt",
-                    "TestCase1S2.txt",
-                    // test case 2 - same thing, but test delete and see if it properly updates the student booking list
+//                    // test case 1 - trying to book the same room in 3 threads. Testing the booking capacity as well, also test delete and see if it properly updates the student booking list
+//                    "TestCase1A.txt",
+//                    "TestCase1S.txt",
+//                    "TestCase1S2.txt",
+                    //// test case 2 - doing a bunch of stuff at once, kept same conflict, activity across servers, + simple get available dates test
+                    "TestCase2A1.txt",
+                    "TestCase2A2.txt",
+                    "TestCase2A3.txt",
+                    "TestCase2S1.txt",
+                    "TestCase2S2.txt",
+                    "TestCase2S3.txt",
+                    //// test case 3 -
 
-                    // test case 3 - doing a bunch of stuff at once, kept same conflict, activity across servers,
+                    // test case 4 -
 
                     //
             };
@@ -86,6 +93,7 @@ public class Client {
 
             while((line=br.readLine())!=null){
                 args = line.split(" ");
+                if (args.length == 0) return;
 
                 if (args[0].equals("bookRoom")){
                     evaluator = (remoteObjectName, args_) -> remoteObjectName.endsWith(args_[1]);
@@ -202,6 +210,15 @@ public class Client {
                 toLog.put("bookingID", bookingIDs.peek());
                 toLog.put("reply", roomRecords.cancelBooking(bookingIDs.pop(), userID));
                 break;
+            case "wait":
+                int toWait = Integer.parseInt(args[1]);
+                try {
+                    TimeUnit.SECONDS.sleep(toWait);
+                } catch (InterruptedException e) {
+                    System.out.println("Could not wait!");
+                    e.printStackTrace();
+                }
+
             default:
                 toLog.put("Client ignored command", "Could not understand command");
                 break;
