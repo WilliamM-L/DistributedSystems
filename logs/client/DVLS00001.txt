@@ -1,0 +1,8 @@
+==========
+date : 31-10-2021
+room number : 1
+time slots : 06:00-07:00
+Command : bookRoom
+reply : Failed: Room is already booked.
+userID : DVLS00001
+Time at Request: 2021-10-05T22:19:46.449841900

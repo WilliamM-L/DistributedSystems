@@ -1,0 +1,14 @@
+==========
+date : 03-10-2021
+room number : 5
+time slots : 10:00-11:00
+Command : bookRoom
+reply : Failed: No room records under room number: 5
+userID : DVLS1111
+Time at Request: 2021-10-05T20:58:44.081016700
+==========
+date : 01-10-2021
+Command : getAvailableTimeSlot
+reply : WST:2 KKL:2 DVL:2 
+userID : DVLS1111
+Time at Request: 2021-10-05T20:58:44.089016600

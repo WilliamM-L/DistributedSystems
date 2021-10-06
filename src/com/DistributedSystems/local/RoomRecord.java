@@ -88,38 +88,37 @@ public class RoomRecord {
         return msg;
     }
 
-    public static String bookFromList(List<RoomRecord> roomRecordList, TimeSlot timeslot, ConcurrentHashMap<String, List<String>> studentBookingCount, String userID) {
+    public static synchronized String bookFromList(List<RoomRecord> roomRecordList, TimeSlot timeslot, ConcurrentHashMap<String, List<String>> studentBookingCount, String userID) {
         String confirmation = null;
         List<String> roomsBookedByStudent;
-        for(RoomRecord roomRecord: roomRecordList){
-            if (roomRecord.timeSlot.equals(timeslot)){
+        for (RoomRecord roomRecord : roomRecordList) {
+            if (roomRecord.timeSlot.equals(timeslot)) {
                 roomsBookedByStudent = studentBookingCount.get(userID);
-                if (roomsBookedByStudent == null){
-                    roomsBookedByStudent = new ArrayList<>();
-                    roomsBookedByStudent.add(roomRecord.recordID);
-                    studentBookingCount.put(userID, roomsBookedByStudent);
-                    confirmation = roomRecord.recordID;
+                if (roomRecord.booked_by != null) {
+                    return failurePrefix + "Room is already booked.";
                 } else {
-                    if (roomRecord.booked_by != null){
-                        return failurePrefix + "Room is already booked.";
-                    }
-                    if (roomsBookedByStudent.size() < 3){
-                        roomRecord.booked_by = userID;
-                        confirmation = roomRecord.recordID;
-                        // IMPORTANT : BOOKINGID IS JUST THE RECORDID FOR SIMPLICITY!
+                    if (roomsBookedByStudent == null) {
+                        roomsBookedByStudent = new ArrayList<>();
                         roomsBookedByStudent.add(roomRecord.recordID);
-                    }else {
-                        return  failurePrefix + "You have booked 3 rooms already, come back next week!";
+                        studentBookingCount.put(userID, roomsBookedByStudent);
+                        confirmation = roomRecord.recordID;
+                        roomRecord.booked_by = userID;
+                        return successPrefix + confirmation;
+                    } else {
+                        if (roomsBookedByStudent.size() < 3) {
+                            roomRecord.booked_by = userID;
+                            confirmation = roomRecord.recordID;
+                            // IMPORTANT : BOOKINGID IS JUST THE RECORDID FOR SIMPLICITY!
+                            roomsBookedByStudent.add(roomRecord.recordID);
+                            return successPrefix + confirmation;
+                        } else {
+                            return failurePrefix + "You have booked 3 rooms already, come back next week!";
+                        }
                     }
                 }
-                break;
             }
         }
-        if (confirmation != null){
-            return successPrefix + confirmation;
-        } else {
-            return failurePrefix +"Room record could not be found.";
-        }
+        return failurePrefix + "Room record could not be found.";
     }
 
     private boolean intersect(RoomRecord roomRecord) {

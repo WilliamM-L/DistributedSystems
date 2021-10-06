@@ -5,7 +5,7 @@ time slots : 10:00-11:00/13:00-14:00
 Command : createRoom
 reply : Success: All room records added.
 userID : DVLA1111
-Time at Request: 2021-10-04T18:47:24.941916900
+Time at Request: 2021-10-05T20:58:44.081016700
 ==========
 date : 03-10-2021
 room number : 5
@@ -13,7 +13,7 @@ time slots : 08:00-11:30/15:00-16:00
 Command : createRoom
 reply : Success: The conflicting timeslots were ignored, the valid ones were added.
 userID : DVLA1111
-Time at Request: 2021-10-04T18:47:24.944917200
+Time at Request: 2021-10-05T20:58:44.084017100
 ==========
 date : 03-10-2021
 room number : 5
@@ -21,24 +21,24 @@ time slots : 13:00-14:00
 Command : deleteRoom
 reply : Success: 1 out of 1 room records were deleted.
 userID : DVLA1111
-Time at Request: 2021-10-04T18:47:24.948917800
+Time at Request: 2021-10-05T20:58:44.088015600
 ==========
 date : 03-10-2021
 room number : 5
 time slots : 10:00-11:00
 Command : bookRoom
-reply : Success: RR910761
+reply : Success: RR22560DVL
 userID : DVLA1111
-Time at Request: 2021-10-04T18:47:24.951918200
+Time at Request: 2021-10-05T20:58:44.090017600
 ==========
 date : 01-10-2021
 Command : getAvailableTimeSlot
 reply : WST:2 KKL:2 DVL:2 
 userID : DVLA1111
-Time at Request: 2021-10-04T18:47:24.958916500
+Time at Request: 2021-10-05T20:58:44.093017800
 ==========
 Command : cancelBooking
 reply : Success: Booking cancelled.
 userID : DVLA1111
-bookingID : RR910761
-Time at Request: 2021-10-04T18:47:24.959918400
+bookingID : RR22560DVL
+Time at Request: 2021-10-05T20:58:44.093017800

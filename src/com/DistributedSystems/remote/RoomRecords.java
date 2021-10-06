@@ -240,7 +240,7 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
         DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MM-yyyy").toFormatter(Locale.ENGLISH);
         // conversion ex: LocalDateTime date = LocalDateTime.from(LocalDate.parse("01-10-2021", formatter).atStartOfDay());
 
-        LocalDate date = LocalDate.parse("01-10-2021", formatter);
+        LocalDate date = LocalDate.parse("31-10-2021", formatter);
         HashMap<Integer, List<RoomRecord>> entry = new HashMap<>();
         List<RoomRecord> roomRecordList = new ArrayList<>();
         roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(6,0)), campusName));

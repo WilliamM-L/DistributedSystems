@@ -17,6 +17,49 @@ public class Client {
     private static final DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MM-yyyy").toFormatter(Locale.ENGLISH);
     private static final String logsFolder = "logs\\client\\";
 
+    public static void main(String[] args) throws NotBoundException, IOException, InterruptedException {
+        try {
+            //todo sync methods so multiple can edit at once
+            int portNum = 1313;
+            String registryURL = "rmi://localhost:" + portNum;
+
+            // Waiting for the server to come online when they are started at the same time
+            TimeUnit.SECONDS.sleep(4);
+
+            String[] remoteObjectNames = Naming.list(registryURL);
+            System.out.println("Lookup completed");
+
+            String[] fileNames = new String[]{
+//                    "AdminDVL1.txt",
+//                    "StudentDVL1.txt",
+//                    "AdminKKL1.txt"
+                    // test case 1 - trying to book the same room in 2 threads.
+                    "TestCase1A.txt",
+                    "TestCase1S.txt",
+                    "TestCase1S2.txt",
+            };
+
+            for (int i = 0; i < fileNames.length; i++) {
+                int finalI = i;
+//                TimeUnit.SECONDS.sleep(1);
+                new Thread(() -> {
+                    try {
+                        executeInstructionFile(fileNames[finalI], remoteObjectNames);
+                    } catch (IOException | NotBoundException  e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+            }
+
+
+        }
+        catch (Exception e) {
+            System.out.println("Exception in StudentClient: " + e);
+            System.out.println(Arrays.toString(e.getStackTrace()));
+            throw e;
+        }
+    }
+
     private static void executeInstructionFile(String instructionFileName, String[] remoteObjectNames) throws IOException, NotBoundException {
         String path = instructionDir + "\\" + instructionFileName;
         File file = new File(path);
@@ -42,7 +85,13 @@ public class Client {
                 if (args[0].equals("bookRoom")){
                     evaluator = (remoteObjectName, args_) -> remoteObjectName.endsWith(args_[1]);
                 } else if (args[0].equals("cancelBooking")){
-                    evaluator = (remoteObjectName, args_) -> remoteObjectName.endsWith(bookingIDs.peek());
+                    if (bookingIDs.empty()){
+                        HashMap<String, String> toLog = new HashMap<>() {{put("Client ignored command", "There is no booking to cancel!");}};
+                        log(logger, toLog);
+                        continue;
+                    } else {
+                        evaluator = (remoteObjectName, args_) -> remoteObjectName.endsWith(bookingIDs.peek());
+                    }
                 } else {
                     evaluator = (remoteObjectName, args_) -> remoteObjectName.endsWith(campus);
                 }
@@ -61,8 +110,8 @@ public class Client {
 
             }
 
-        } catch (IOException | NotBoundException e) {
-            System.out.println("Exception: at line" + line);
+        } catch (Exception e) {
+            System.out.println("Exception: at line\n" + line);
             throw e;
         }
 
@@ -159,44 +208,5 @@ public class Client {
         return toLog;
     }
 
-    public static void main(String[] args) throws NotBoundException, IOException, InterruptedException {
-        try {
-            // TODO: 2021-10-03 add userId to all server/client logs
-            // todo Add the campus name to RecordIds so the client can find the right obj to to cancel it!
 
-            //todo generate logs for both clients and servers
-            //todo sync methods so multiple can edit at once
-            int portNum = 1313;
-            String registryURL = "rmi://localhost:" + portNum;
-
-            // Waiting for the server to come online when they are started at the same time
-            TimeUnit.SECONDS.sleep(4);
-
-            String[] remoteObjectNames = Naming.list(registryURL);
-            System.out.println("Lookup completed");
-
-            String[] fileNames = new String[]{
-                    "AdminDVL1.txt",
-//                    "AdminKKL1.txt"
-            };
-
-            for (int i = 0; i < fileNames.length; i++) {
-                int finalI = i;
-                new Thread(() -> {
-                    try {
-                        executeInstructionFile(fileNames[finalI], remoteObjectNames);
-                    } catch (IOException | NotBoundException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
-            }
-
-
-        }
-        catch (Exception e) {
-            System.out.println("Exception in StudentClient: " + e);
-            System.out.println(Arrays.toString(e.getStackTrace()));
-            throw e;
-        }
-    }
 }
