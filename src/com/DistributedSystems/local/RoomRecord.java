@@ -71,7 +71,9 @@ public class RoomRecord {
                     // updating the student booking count if the room was booked
                     if (roomRecord.booked_by != null) {
                         studentBookingList = studentBookingCount.get(roomRecord.booked_by);
-                        studentBookingList.remove(roomRecord.recordID);
+                        synchronized (studentBookingList){
+                            studentBookingList.remove(roomRecord.recordID);
+                        }
                     }
                 }
             }
@@ -110,7 +112,9 @@ public class RoomRecord {
                             roomRecord.booked_by = userID;
                             confirmation = roomRecord.recordID;
                             // IMPORTANT : BOOKINGID IS JUST THE RECORDID FOR SIMPLICITY!
-                            roomsBookedByStudent.add(roomRecord.recordID);
+                            synchronized (roomsBookedByStudent){
+                                roomsBookedByStudent.add(roomRecord.recordID);
+                            }
                             return successPrefix + confirmation;
                         } else {
                             return failurePrefix + "You have booked 3 rooms already, come back next week!";

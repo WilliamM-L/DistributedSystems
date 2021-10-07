@@ -33,22 +33,27 @@ public class Client {
 //                    "AdminDVL1.txt",
 //                    "StudentDVL1.txt",
 //                    "AdminKKL1.txt"
-//                    // test case 1 - trying to book the same room in 3 threads. Testing the booking capacity as well, also test delete and see if it properly updates the student booking list
+//                    // test case 1 - trying to book the same room in 3 threads. Testing the booking capacity as well, also test delete and see if it properly updates the student booking list + admin privileges
 //                    "TestCase1A.txt",
 //                    "TestCase1S.txt",
 //                    "TestCase1S2.txt",
                     //// test case 2 - doing a bunch of stuff at once, kept same conflict, activity across servers, + simple get available dates test
-                    "TestCase2A1.txt",
-                    "TestCase2A2.txt",
-                    "TestCase2A3.txt",
-                    "TestCase2S1.txt",
-                    "TestCase2S2.txt",
-                    "TestCase2S3.txt",
-                    //// test case 3 -
-
-                    // test case 4 -
-
-                    //
+//                    "TestCase2A1.txt",
+//                    "TestCase2A2.txt",
+//                    "TestCase2A3.txt",
+//                    "TestCase2S1.txt",
+//                    "TestCase2S2.txt",
+//                    "TestCase2S3.txt",
+                    //// test case 3 - Will try to book and delete a room that doesn’t exist anymore.
+//                    "TestCase3A1.txt",
+                    //// test case 4 - Will try to cancel a booking that doesn’t exist.
+//                    "TestCase4A1.txt",
+                    //// test case 5 - Trying to create room records with conflicting timeslots.
+//                    "TestCase5A1.txt",
+                    //// test case 5 - Trying to create room records with conflicting timeslots.
+                    "TestCase6A1.txt",
+                    "TestCase6A2.txt",
+                    "TestCase6S1.txt",
             };
 
             for (int i = 0; i < fileNames.length; i++) {

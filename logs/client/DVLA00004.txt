@@ -1,0 +1,11 @@
+==========
+date : 03-10-2021
+room number : 5
+time slots : 10:00-11:00
+Command : createRoom
+reply : Success: All room records added.
+userID : DVLA00004
+Time at Request: 2021-10-06T22:51:38.248542300
+==========
+Client ignored command : There is no booking to cancel!
+Time at Request: 2021-10-06T22:51:38.249541900

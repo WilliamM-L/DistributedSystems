@@ -54,16 +54,16 @@ public class Server {
             listRegistry(registryURL);
             System.out.println("RoomRecords Server ready.");
             // can have an infinite loop here since threads are created per connection for rmi
-            try (DatagramSocket aSocket = new DatagramSocket(socketPort)) {
+            try (DatagramSocket socket = new DatagramSocket(socketPort)) {
                 // create socket at agreed port
                 byte[] buffer = new byte[1000];
                 while (true) {
                     DatagramPacket request = new DatagramPacket(buffer, buffer.length);
-                    aSocket.receive(request);
+                    socket.receive(request);
                     LocalDate dateToCheck = LocalDate.parse(new String(buffer, 0, request.getLength()).substring(0,10), dateTimeFormatter);
                     String availabilities = exportedRoomRecords.getAvailableTimeSlot(dateToCheck);
                     DatagramPacket reply = new DatagramPacket(availabilities.getBytes(), availabilities.length(), request.getAddress(), request.getPort());
-                    aSocket.send(reply);
+                    socket.send(reply);
                 }
             } catch (SocketException e) {
                 System.out.println("Socket: " + e.getMessage());

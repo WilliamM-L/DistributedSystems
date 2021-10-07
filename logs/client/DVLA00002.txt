@@ -1,37 +1,48 @@
 ==========
 date : 03-10-2021
 room number : 5
-time slots : 10:00-11:00/13:00-14:00/15:00-15:30/16:00-16:30
-Command : createRoom
-reply : Success: All room records added.
+time slots : 10:00-11:00
+Command : bookRoom
+reply : Failed: No room records under date: 2021-10-03
 userID : DVLA00002
-Time at Request: 2021-10-06T14:35:31.262026300
+Time at Request: 2021-10-06T22:45:37.264365
 ==========
 date : 03-10-2021
-room number : 7
-time slots : 16:45-17:45
-Command : createRoom
-reply : Success: All room records added.
-userID : DVLA00002
-Time at Request: 2021-10-06T14:35:31.266027200
-==========
-date : 05-10-2021
 room number : 5
-time slots : 16:45-17:45
+time slots : 10:00-11:00
 Command : createRoom
 reply : Success: All room records added.
 userID : DVLA00002
-Time at Request: 2021-10-06T14:35:31.269028200
+Time at Request: 2021-10-06T22:45:37.268361700
+==========
+date : 03-10-2021
+room number : 6
+time slots : 10:00-11:00
+Command : bookRoom
+reply : Failed: No room records under room number: 6
+userID : DVLA00002
+Time at Request: 2021-10-06T22:45:37.270362300
+==========
+date : 03-10-2021
+room number : 5
+time slots : 10:00-11:00
+Command : deleteRoom
+reply : Success: 1 out of 1 room records were deleted.
+userID : DVLA00002
+Time at Request: 2021-10-06T22:45:37.274363200
 ==========
 date : 03-10-2021
 room number : 5
 time slots : 10:00-11:00
 Command : bookRoom
-reply : Success: RR478078DVL
+reply : Failed: Room record could not be found.
 userID : DVLA00002
-Time at Request: 2021-10-06T14:35:31.272027400
+Time at Request: 2021-10-06T22:45:37.277361500
 ==========
-Client ignored command : Could not understand command
-Command : wait
+date : 03-10-2021
+room number : 5
+time slots : 10:00-11:00
+Command : deleteRoom
+reply : Failed: 0 out of 1 room records were deleted.
 userID : DVLA00002
-Time at Request: 2021-10-06T14:35:32.274670500
+Time at Request: 2021-10-06T22:45:37.279361900

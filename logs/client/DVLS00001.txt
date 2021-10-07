@@ -3,6 +3,11 @@ date : 31-10-2021
 room number : 1
 time slots : 06:00-07:00
 Command : bookRoom
-reply : Success: RR913464DVL
+reply : Success: RR745330DVL
 userID : DVLS00001
-Time at Request: 2021-10-06T13:40:00.920321500
+Time at Request: 2021-10-06T20:28:16.924271300
+==========
+Client ignored command : Admin status required
+Command : createRoom
+userID : DVLS00001
+Time at Request: 2021-10-06T20:28:16.926272700

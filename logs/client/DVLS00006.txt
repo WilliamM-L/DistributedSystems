@@ -1,0 +1,13 @@
+==========
+Client ignored command : Could not understand command
+Command : wait
+userID : DVLS00006
+Time at Request: 2021-10-06T23:06:11.439714100
+==========
+date : 03-10-2021
+room number : 5
+time slots : 10:00-11:00
+Command : bookRoom
+reply : Failed: Room record could not be found.
+userID : DVLS00006
+Time at Request: 2021-10-06T23:06:11.443718400

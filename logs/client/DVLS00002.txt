@@ -1,35 +1,13 @@
 ==========
-Client ignored command : Could not understand command
-Command : wait
-userID : DVLS00002
-Time at Request: 2021-10-06T14:35:32.243931
-==========
-date : 03-10-2021
-room number : 5
-time slots : 13:00-14:00
+date : 31-10-2021
+room number : 1
+time slots : 06:00-07:00
 Command : bookRoom
-reply : Success: RR587271DVL
+reply : Failed: Room is already booked.
 userID : DVLS00002
-Time at Request: 2021-10-06T14:35:32.244930800
+Time at Request: 2021-10-06T20:28:16.924271300
 ==========
-date : 03-10-2021
-room number : 5
-time slots : 13:00-14:00
-Command : bookRoom
-reply : Success: RR186524WST
+Client ignored command : Admin status required
+Command : deleteRoom
 userID : DVLS00002
-Time at Request: 2021-10-06T14:35:32.246933300
-==========
-date : 03-10-2021
-room number : 5
-time slots : 13:00-14:00
-Command : bookRoom
-reply : Success: RR33027KKL
-userID : DVLS00002
-Time at Request: 2021-10-06T14:35:32.249933300
-==========
-date : 05-10-2021
-Command : getAvailableTimeSlot
-reply : WST:1 KKL:1 DVL:1 
-userID : DVLS00002
-Time at Request: 2021-10-06T14:35:32.253932200
+Time at Request: 2021-10-06T20:28:16.926272700

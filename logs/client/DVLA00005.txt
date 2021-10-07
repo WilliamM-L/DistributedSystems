@@ -1,0 +1,32 @@
+==========
+date : 03-10-2021
+room number : 5
+time slots : 10:00-11:00
+Command : createRoom
+reply : Success: All room records added.
+userID : DVLA00005
+Time at Request: 2021-10-06T22:53:17.499292900
+==========
+date : 03-10-2021
+room number : 5
+time slots : 10:30-11:00
+Command : createRoom
+reply : Failed: All given timeslots conflict with existing room records.
+userID : DVLA00005
+Time at Request: 2021-10-06T22:53:17.502294700
+==========
+date : 03-10-2021
+room number : 5
+time slots : 09:45-10:20
+Command : createRoom
+reply : Failed: All given timeslots conflict with existing room records.
+userID : DVLA00005
+Time at Request: 2021-10-06T22:53:17.504295500
+==========
+date : 03-10-2021
+room number : 5
+time slots : 10:20-10:30
+Command : createRoom
+reply : Failed: All given timeslots conflict with existing room records.
+userID : DVLA00005
+Time at Request: 2021-10-06T22:53:17.505294100

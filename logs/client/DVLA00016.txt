@@ -1,0 +1,13 @@
+==========
+Client ignored command : Could not understand command
+Command : wait
+userID : DVLA00016
+Time at Request: 2021-10-06T23:06:11.439714100
+==========
+date : 03-10-2021
+room number : 5
+time slots : 10:00-11:00
+Command : deleteRoom
+reply : Success: 1 out of 1 room records were deleted.
+userID : DVLA00016
+Time at Request: 2021-10-06T23:06:11.443718400

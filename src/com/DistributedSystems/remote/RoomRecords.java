@@ -147,7 +147,6 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
     }
 
     public String getAvailableTimeSlot(String dateText, String userID) throws java.rmi.RemoteException{
-        //todo send text to other objs' servers, then parse it for ourselves, call local method.
         DatagramSocket datagramSocket = null;
         int serverPort;
 
@@ -197,7 +196,9 @@ public class RoomRecords extends UnicastRemoteObject implements IRoomRecords{
                         if (roomRecord.recordID.equals(bookingID)){
                             roomRecord.booked_by = null;
                             List<String> studentRecords = studentBookingCount.get(userID);
-                            studentRecords.remove(roomRecord.recordID);
+                            synchronized (studentRecords){
+                                studentRecords.remove(roomRecord.recordID);
+                            }
                             msg = RoomRecord.successPrefix + "Booking cancelled.";
                             break;
                         }
