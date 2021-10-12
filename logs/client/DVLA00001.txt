@@ -5,7 +5,7 @@ time slots : 06:00-07:00
 Command : bookRoom
 reply : Failed: Room is already booked.
 userID : DVLA00001
-Time at Request: 2021-10-06T20:28:16.924271300
+Time at Request: 2021-10-12T13:59:41.605321700
 ==========
 date : 03-10-2021
 room number : 5
@@ -13,31 +13,31 @@ time slots : 10:00-11:00/13:00-14:00/15:00-15:30/16:00-16:30/16:45-17:45
 Command : createRoom
 reply : Success: All room records added.
 userID : DVLA00001
-Time at Request: 2021-10-06T20:28:16.929271800
+Time at Request: 2021-10-12T13:59:41.611321
 ==========
 date : 03-10-2021
 room number : 5
 time slots : 10:00-11:00
 Command : bookRoom
-reply : Success: RR979528DVL
+reply : Success: RR854229DVL
 userID : DVLA00001
-Time at Request: 2021-10-06T20:28:16.931271900
+Time at Request: 2021-10-12T13:59:41.613321
 ==========
 date : 03-10-2021
 room number : 5
 time slots : 13:00-14:00
 Command : bookRoom
-reply : Success: RR501491DVL
+reply : Success: RR710382DVL
 userID : DVLA00001
-Time at Request: 2021-10-06T20:28:16.932272300
+Time at Request: 2021-10-12T13:59:41.615321900
 ==========
 date : 03-10-2021
 room number : 5
 time slots : 15:00-15:30
 Command : bookRoom
-reply : Success: RR978351DVL
+reply : Success: RR180887DVL
 userID : DVLA00001
-Time at Request: 2021-10-06T20:28:16.934272100
+Time at Request: 2021-10-12T13:59:41.616322100
 ==========
 date : 03-10-2021
 room number : 5
@@ -45,21 +45,21 @@ time slots : 16:00-16:30
 Command : bookRoom
 reply : Failed: You have booked 3 rooms already, come back next week!
 userID : DVLA00001
-Time at Request: 2021-10-06T20:28:16.936270300
+Time at Request: 2021-10-12T13:59:41.618320800
 ==========
 Command : cancelBooking
 reply : Success: Booking cancelled.
 userID : DVLA00001
-bookingID : RR978351DVL
-Time at Request: 2021-10-06T20:28:16.937272600
+bookingID : RR180887DVL
+Time at Request: 2021-10-12T13:59:41.619321100
 ==========
 date : 03-10-2021
 room number : 5
 time slots : 16:00-16:30
 Command : bookRoom
-reply : Success: RR911709DVL
+reply : Success: RR7013DVL
 userID : DVLA00001
-Time at Request: 2021-10-06T20:28:16.938271300
+Time at Request: 2021-10-12T13:59:41.621321700
 ==========
 date : 03-10-2021
 room number : 5
@@ -67,12 +67,12 @@ time slots : 10:00-11:00
 Command : deleteRoom
 reply : Success: 1 out of 1 room records were deleted.
 userID : DVLA00001
-Time at Request: 2021-10-06T20:28:16.941272600
+Time at Request: 2021-10-12T13:59:41.624320500
 ==========
 date : 03-10-2021
 room number : 5
 time slots : 16:45-17:45
 Command : bookRoom
-reply : Success: RR87751DVL
+reply : Success: RR979162DVL
 userID : DVLA00001
-Time at Request: 2021-10-06T20:28:16.942270400
+Time at Request: 2021-10-12T13:59:41.626320900
