@@ -1,7 +1,7 @@
-package com.DistributedSystems.remote;
+package com.DistributedSystems.asg1.remote;
 
-import com.DistributedSystems.local.RoomRecord;
-import com.DistributedSystems.local.TimeSlot;
+import com.DistributedSystems.asg1.local.RoomRecord;
+import com.DistributedSystems.asg1.local.TimeSlot;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

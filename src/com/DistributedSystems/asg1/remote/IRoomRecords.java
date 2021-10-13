@@ -1,14 +1,12 @@
-package com.DistributedSystems.remote;
+package com.DistributedSystems.asg1.remote;
 import java.rmi.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.DistributedSystems.local.RoomRecord;
-import com.DistributedSystems.local.TimeSlot;
+import com.DistributedSystems.asg1.local.RoomRecord;
+import com.DistributedSystems.asg1.local.TimeSlot;
 
 public interface IRoomRecords extends Remote {
     ConcurrentHashMap<LocalDate,HashMap<Integer, List<RoomRecord>>> roomRecords = new ConcurrentHashMap<>();

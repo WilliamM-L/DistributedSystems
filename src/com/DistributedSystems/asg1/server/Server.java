@@ -1,14 +1,12 @@
-package com.DistributedSystems.server;
+package com.DistributedSystems.asg1.server;
 
-import com.DistributedSystems.local.RoomRecord;
-import com.DistributedSystems.remote.RoomRecords;
+import com.DistributedSystems.asg1.remote.RoomRecords;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.MalformedURLException;
 import java.net.SocketException;
-import java.nio.charset.StandardCharsets;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;

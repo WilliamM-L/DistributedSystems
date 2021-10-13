@@ -1,4 +1,4 @@
-package com.DistributedSystems.lambda;
+package com.DistributedSystems.asg1.lambda;
 
 public class Lambdas {
     public interface ChooseCampus{

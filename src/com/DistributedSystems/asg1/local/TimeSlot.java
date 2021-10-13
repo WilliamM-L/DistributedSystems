@@ -1,4 +1,4 @@
-package com.DistributedSystems.local;
+package com.DistributedSystems.asg1.local;
 
 import java.io.Serializable;
 import java.time.LocalTime;

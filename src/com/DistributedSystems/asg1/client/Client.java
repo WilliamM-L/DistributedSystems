@@ -1,7 +1,7 @@
-package com.DistributedSystems.client;
-import com.DistributedSystems.lambda.Lambdas;
-import com.DistributedSystems.local.TimeSlot;
-import com.DistributedSystems.remote.IRoomRecords;
+package com.DistributedSystems.asg1.client;
+import com.DistributedSystems.asg1.lambda.Lambdas;
+import com.DistributedSystems.asg1.local.TimeSlot;
+import com.DistributedSystems.asg1.remote.IRoomRecords;
 
 import java.io.*;
 import java.rmi.*;

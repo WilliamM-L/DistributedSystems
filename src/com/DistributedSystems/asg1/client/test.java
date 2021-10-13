@@ -1,9 +1,8 @@
-package com.DistributedSystems.client;
+package com.DistributedSystems.asg1.client;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
 public class test {
