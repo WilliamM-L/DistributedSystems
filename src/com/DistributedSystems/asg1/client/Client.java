@@ -87,7 +87,7 @@ public class Client {
         Lambdas.ChooseCampus evaluator = null;
         boolean campusServerFound;
         Stack<String> bookingIDs = new Stack<>();
-        try (fileReader) {
+        try {
             BufferedReader br = new BufferedReader(fileReader);
 
             line = br.readLine();
@@ -104,7 +104,7 @@ public class Client {
                     evaluator = (remoteObjectName, args_) -> remoteObjectName.endsWith(args_[1]);
                 } else if (args[0].equals("cancelBooking")){
                     if (bookingIDs.empty()){
-                        HashMap<String, String> toLog = new HashMap<>() {{put("Client ignored command", "There is no booking to cancel!");}};
+                        HashMap<String, String> toLog = new HashMap<String, String>() {{put("Client ignored command", "There is no booking to cancel!");}};
                         log(logger, toLog);
                         continue;
                     } else {
@@ -131,6 +131,8 @@ public class Client {
         } catch (Exception e) {
             System.out.println("Exception: at line\n" + line);
             throw e;
+        } finally {
+            fileReader.close();
         }
 
     }

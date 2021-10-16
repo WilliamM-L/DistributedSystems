@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 
 public class Server {
-    private static HashMap<String, Integer> socketPorts = new HashMap<>() {
+    private static HashMap<String, Integer> socketPorts = new HashMap<String, Integer>() {
         {
             put("DVL", 6789);
             put("KKL", 6790);

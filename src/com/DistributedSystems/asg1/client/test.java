@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 public class test {
     public static void main(String[] args) throws InterruptedException {
         ConcurrentHashMap<Integer, List<String>> map = new ConcurrentHashMap<>();
-        map.put(1, new ArrayList<>(){{add("a");}});
+        map.put(1, new ArrayList<String>(){{add("a");}});
 
         new Thread(() -> {
 //            synchronized (map){

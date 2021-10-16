@@ -1,0 +1,15 @@
+/**
+path to idlj compiler: C:\Program Files\Java\jdk1.8.0_202\bin\idlj.exe
+*/
+
+module RoomRecordsObj{
+    interface RoomRecordsCorba{
+        string createRoom(in long room_Number, in string date, in string list_Of_Time_Slots, in string userID);
+        string  deleteRoom (in long room_Number, in string date, in string list_Of_Time_Slots, in string userID);
+        string bookRoom(in long roomNumber, in string date, in string timeslot, in string userID);
+        string getAvailableTimeSlot(in string dateText, in string userID);
+        string cancelBooking(in string bookingID, in string userID);
+        string changeReservation(in string booking_id, in string new_campus_name, in long new_room_no,in string new_time_slot);
+        oneway void shutdown();
+    };
+};

@@ -21,4 +21,4 @@ public interface IRoomRecords extends Remote {
     String getAvailableTimeSlot(String dateText, String userID) throws java.rmi.RemoteException;
     String cancelBooking(String bookingID, String userID)  throws java.rmi.RemoteException;
 
-} //end interface
+}
