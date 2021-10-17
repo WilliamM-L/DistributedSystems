@@ -228,7 +228,7 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
 
     public String changeReservation(String bookingID, String newCampusName, int newRoomNum, String newTimeSlot, String userID){
 
-        String msg = "";
+        String msg = "woooweeeeeeeee!";
 
         return msg;
     }

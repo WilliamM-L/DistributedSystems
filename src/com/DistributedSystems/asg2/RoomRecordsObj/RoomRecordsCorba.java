@@ -10,4 +10,4 @@ package com.DistributedSystems.asg2.RoomRecordsObj;
 
 public interface RoomRecordsCorba extends RoomRecordsCorbaOperations, org.omg.CORBA.Object, org.omg.CORBA.portable.IDLEntity
 {
-} // interface RoomRecordsCorba
+}

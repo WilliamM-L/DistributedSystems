@@ -3,6 +3,15 @@ package com.DistributedSystems.asg2.client;
 import com.DistributedSystems.asg1.lambda.Lambdas;
 import com.DistributedSystems.asg1.local.TimeSlot;
 import com.DistributedSystems.asg1.remote.IRoomRecords;
+import com.DistributedSystems.asg2.RoomRecordsObj.RoomRecordsCorba;
+import com.DistributedSystems.asg2.RoomRecordsObj.RoomRecordsCorbaHelper;
+import com.DistributedSystems.asg2.remote.RoomRecords;
+import org.omg.CORBA.ORB;
+import org.omg.CosNaming.NamingContextExt;
+import org.omg.CosNaming.NamingContextExtHelper;
+import org.omg.CosNaming.NamingContextPackage.CannotProceed;
+import org.omg.CosNaming.NamingContextPackage.InvalidName;
+import org.omg.CosNaming.NamingContextPackage.NotFound;
 
 import java.io.*;
 import java.rmi.Naming;
@@ -19,25 +28,33 @@ public class Client {
     private static final DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MM-yyyy").toFormatter(Locale.ENGLISH);
     private static final String logsFolder = "logs\\client\\";
 
-    public static void main(String[] args) throws NotBoundException, IOException, InterruptedException {
-        try {
-            int portNum = 1313;
-            String registryURL = "rmi://localhost:" + portNum;
+    public static void main(String[] args) throws InterruptedException, InvalidName, CannotProceed, NotFound {
 
+        try {
             // Waiting for the server to come online when they are started at the same time
             TimeUnit.SECONDS.sleep(4);
 
-            String[] remoteObjectNames = Naming.list(registryURL);
-            System.out.println("Lookup completed");
+            // create and initialize the ORB
+            ORB orb = ORB.init(args, null);
+            // get the root naming context
+            org.omg.CORBA.Object objRef = orb.string_to_object("corbaloc::localhost:8050/NameService");
+            // Use NamingContextExt instead of NamingContext. This is part of the Interoperable naming Service.
+            NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
+            // resolve the Object Reference in Naming
+            String name = "RoomRecords";
+            RoomRecordsCorba roomRecords = RoomRecordsCorbaHelper.narrow(ncRef.resolve_str(name));
+            System.out.println("Obtained a handle on server object: " + roomRecords);
+
+            System.out.println(roomRecords.changeReservation("1","2",2,"i","i"));
 
             String[] fileNames = new String[]{
-//                    "AdminDVL1.txt",
+                    "AdminDVL1.txt",
 //                    "StudentDVL1.txt",
 //                    "AdminKKL1.txt"
                     // test case 1 - trying to book the same room in 3 threads. Testing the booking capacity as well, also test delete and see if it properly updates the student booking list + admin privileges
-                    "TestCase1A.txt",
-                    "TestCase1S.txt",
-                    "TestCase1S2.txt",
+//                    "TestCase1A.txt",
+//                    "TestCase1S.txt",
+//                    "TestCase1S2.txt",
                     //// test case 2 - doing a bunch of stuff at once, kept same conflict, activity across servers, + simple get available dates test
 //                    "TestCase2A1.txt",
 //                    "TestCase2A2.txt",
@@ -57,25 +74,26 @@ public class Client {
 //                    "TestCase6S1.txt",
             };
 
-            for (int i = 0; i < fileNames.length; i++) {
-                int finalI = i;
-//                TimeUnit.SECONDS.sleep(1);
-                new Thread(() -> {
-                    try {
-                        executeInstructionFile(fileNames[finalI], remoteObjectNames);
-                    } catch (IOException | NotBoundException  e) {
-                        e.printStackTrace();
-                    }
-                }).start();
-            }
+//            for (int i = 0; i < fileNames.length; i++) {
+//                int finalI = i;
+////                TimeUnit.SECONDS.sleep(1);
+//                new Thread(() -> {
+//                    try {
+//                        executeInstructionFile(fileNames[finalI], remoteObjectNames);
+//                    } catch (IOException | NotBoundException  e) {
+//                        e.printStackTrace();
+//                    }
+//                }).start();
+//            }
 
-
-        }
-        catch (Exception e) {
-            System.out.println("Exception in StudentClient: " + e);
-            System.out.println(Arrays.toString(e.getStackTrace()));
+            //shutting down the corba obj, might not want to do that since multiple clients will contact the same obj
+            roomRecords.shutdown();
+        } catch (Exception e) {
+            System.out.println("ERROR in client: " + e);
+            e.printStackTrace(System.out);
             throw e;
         }
+
     }
 
     private static void executeInstructionFile(String instructionFileName, String[] remoteObjectNames) throws IOException, NotBoundException {
