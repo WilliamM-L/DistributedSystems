@@ -46,8 +46,14 @@ public class Server {
             rootpoa.the_POAManager().activate();
 
             // create servant and register it with the ORB
-            RoomRecords roomRecords = new RoomRecords(campusName, socketPorts);
-            roomRecords.setORB(orb);
+            HashMap<String, Integer> socketPortsToSend = new HashMap<>();
+            for(Map.Entry<String, Integer> set: socketPorts.entrySet()){
+                if (!set.getKey().equals(campusName)){
+                    socketPortsToSend.put(set.getKey(), set.getValue());
+                }
+            }
+            RoomRecords roomRecords = new RoomRecords(campusName, socketPortsToSend, orb);
+//            roomRecords.setORB(orb);
 
             // get object reference from the servant
             org.omg.CORBA.Object ref = rootpoa.servant_to_reference(roomRecords);
@@ -59,7 +65,7 @@ public class Server {
             // Use NamingContextExt which is part of the Interoperable Naming Service (INS) specification.
             NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
             // bind the Object Reference in Naming
-            String name = "RoomRecords";
+            String name = "RoomRecords" + campusName;
             NameComponent path[] = ncRef.to_name(name);
             ncRef.rebind(path, href);
             new Thread(() -> {

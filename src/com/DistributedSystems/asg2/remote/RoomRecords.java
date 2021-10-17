@@ -2,8 +2,15 @@ package com.DistributedSystems.asg2.remote;
 
 import com.DistributedSystems.asg1.local.RoomRecord;
 import com.DistributedSystems.asg1.local.TimeSlot;
+import com.DistributedSystems.asg2.RoomRecordsObj.RoomRecordsCorba;
+import com.DistributedSystems.asg2.RoomRecordsObj.RoomRecordsCorbaHelper;
 import com.DistributedSystems.asg2.RoomRecordsObj.RoomRecordsCorbaPOA;
 import org.omg.CORBA.ORB;
+import org.omg.CosNaming.NamingContextExt;
+import org.omg.CosNaming.NamingContextExtHelper;
+import org.omg.CosNaming.NamingContextPackage.CannotProceed;
+import org.omg.CosNaming.NamingContextPackage.InvalidName;
+import org.omg.CosNaming.NamingContextPackage.NotFound;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -22,6 +29,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RoomRecords extends RoomRecordsCorbaPOA {
+    private NamingContextExt namingContextExt;
+    private static String baseCorbaObjName = "RoomRecords";
     private ORB orb;
     public final static String logsFolder = "logs\\server\\";
     public final String campusName;
@@ -109,37 +118,49 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
     }
     // STUDENT
     public String bookRoom(String campusName, int roomNumber, String dateText, String timeSlotText, String userID) {
-        LocalDate date = parseDate(dateText);
-        TimeSlot timeslot = parseTimeSlotList(timeSlotText)[0];
-        List<RoomRecord> roomRecordList = null;
-        HashMap<Integer, List<RoomRecord>> dayRooms = roomRecords.get(date);
         String msg = null;
-        boolean leaveNow = false;
+        if (campusName.equals(this.campusName)){
+            LocalDate date = parseDate(dateText);
+            TimeSlot timeslot = parseTimeSlotList(timeSlotText)[0];
+            List<RoomRecord> roomRecordList = null;
+            HashMap<Integer, List<RoomRecord>> dayRooms = roomRecords.get(date);
+            boolean leaveNow = false;
 
-        if (dayRooms == null){
-            msg = RoomRecord.failurePrefix + "No room records under date: " + date.toString();
-            leaveNow = true;
-        } else {
-            roomRecordList = dayRooms.get(roomNumber);
-            // might be null
-        }
+            if (dayRooms == null){
+                msg = RoomRecord.failurePrefix + "No room records under date: " + date.toString();
+                leaveNow = true;
+            } else {
+                roomRecordList = dayRooms.get(roomNumber);
+                // might be null
+            }
 
-        if (!leaveNow){
-            if (roomRecordList == null){
-                msg = RoomRecord.failurePrefix + "No room records under room number: " + roomNumber;
-            }else {
-                synchronized (roomRecordList){
-                    msg = RoomRecord.bookFromList(roomRecordList, timeslot, studentBookingCount, userID);
+            if (!leaveNow){
+                if (roomRecordList == null){
+                    msg = RoomRecord.failurePrefix + "No room records under room number: " + roomNumber;
+                }else {
+                    synchronized (roomRecordList){
+                        msg = RoomRecord.bookFromList(roomRecordList, timeslot, studentBookingCount, userID);
+                    }
                 }
+            }
+
+            HashMap<String, String> paramNames = new HashMap<>();
+            paramNames.put("room number", Integer.toString(roomNumber));
+            paramNames.put("Date at which to book the room", date.toString());
+            paramNames.put("Time slot", timeslot.toString());
+            paramNames.put("User ID", userID);
+            log("Book Room", paramNames, msg, userID);
+        } else {
+            // send request to appropriate corba obj
+            try {
+                RoomRecordsCorba destination = RoomRecordsCorbaHelper.narrow(namingContextExt.resolve_str(baseCorbaObjName + campusName));
+                return destination.bookRoom(campusName, roomNumber, dateText, timeSlotText, userID);
+            } catch (Exception e) {
+                e.printStackTrace();
+                msg = e.getMessage();
             }
         }
 
-        HashMap<String, String> paramNames = new HashMap<>();
-        paramNames.put("room number", Integer.toString(roomNumber));
-        paramNames.put("Date at which to book the room", date.toString());
-        paramNames.put("Time slot", timeslot.toString());
-        paramNames.put("User ID", userID);
-        log("Book Room", paramNames, msg, userID);
         return msg;
     }
 
@@ -253,7 +274,12 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
 
     }
 
-    public RoomRecords(String campusName, HashMap<String, Integer> externalSocketPorts)  throws RemoteException{
+    public RoomRecords(String campusName, HashMap<String, Integer> externalSocketPorts, ORB orb) {
+        this.orb = orb;
+        // get the root naming context
+        org.omg.CORBA.Object objRef = orb.string_to_object("corbaloc::localhost:8050/NameService");
+        // Use NamingContextExt instead of NamingContext. This is part of the Interoperable naming Service.
+        this.namingContextExt = NamingContextExtHelper.narrow(objRef);
         this.campusName = campusName;
         this.externalSocketPorts = externalSocketPorts;
         try {
