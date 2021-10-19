@@ -118,6 +118,10 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
     }
     // STUDENT
     public String bookRoom(String campusName, int roomNumber, String dateText, String timeSlotText, String userID) {
+        return bookRoom(campusName, roomNumber, dateText, timeSlotText, userID, true);
+    }
+
+    public String bookRoom(String campusName, int roomNumber, String dateText, String timeSlotText, String userID, boolean log) {
         String msg = null;
         if (campusName.equals(this.campusName)){
             LocalDate date = parseDate(dateText);
@@ -144,12 +148,15 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
                 }
             }
 
-            HashMap<String, String> paramNames = new HashMap<>();
-            paramNames.put("room number", Integer.toString(roomNumber));
-            paramNames.put("Date at which to book the room", date.toString());
-            paramNames.put("Time slot", timeslot.toString());
-            paramNames.put("User ID", userID);
-            log("Book Room", paramNames, msg, userID);
+            if (log){
+                HashMap<String, String> paramNames = new HashMap<>();
+                paramNames.put("room number", Integer.toString(roomNumber));
+                paramNames.put("Date at which to book the room", date.toString());
+                paramNames.put("Time slot", timeslot.toString());
+                paramNames.put("User ID", userID);
+                log("Book Room", paramNames, msg, userID);
+            }
+
         } else {
             // send request to appropriate corba obj
             try {
@@ -219,7 +226,11 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
     }
 
     public String cancelBooking(String bookingID, String userID)  {
-        String campusName = bookingID.substring(bookingID.length() - 3);
+        return cancelBooking(bookingID, userID, true);
+    }
+
+    private String cancelBooking(String bookingID, String userID, boolean log)  {
+        String campusName = RoomRecord.extractCampusFromRecordID(bookingID);
         String msg = RoomRecord.failurePrefix + "The booked room record could not be found, it was mostly likely deleted.";
         //bookingID is the recordID
         if (campusName.equals(this.campusName)){
@@ -242,10 +253,11 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
                     }
                 }
             }
-
-            HashMap<String, String> paramNames = new HashMap<>();
-            paramNames.put("Booking ID", bookingID);
-            log("Cancel Booking", paramNames, msg, userID);
+            if (log){
+                HashMap<String, String> paramNames = new HashMap<>();
+                paramNames.put("Booking ID", bookingID);
+                log("Cancel Booking", paramNames, msg, userID);
+            }
         } else {
             // send request to appropriate corba obj
             try {
@@ -257,44 +269,62 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
             }
         }
 
-
         return msg;
     }
 
     public String changeReservation(String bookingID, String newCampusName, int newRoomNum, String newTimeSlot, String newDateText, String userID){
+        String bookingMsg;
+        String cancelMsg;
         String msg = RoomRecord.failurePrefix + "The new room record could not be found, it was mostly likely deleted.";
-        String campusName = bookingID.substring(bookingID.length() - 3);
+        String campusName = RoomRecord.extractCampusFromRecordID(bookingID);
         // todo the obj that executes this has the old record, lock it(remove id from student list, place it back if other record taken), try to to book the other record
         //  if the record was booked, cancel the booking ==== if the record is taken, replace the bookingID
 
-        //bookingID is the recordID
         if (campusName.equals(this.campusName)){
-            outerloop:
-            for (Map.Entry<LocalDate, HashMap<Integer, List<RoomRecord>>> outerSet: roomRecords.entrySet()){
-                for(Map.Entry<Integer, List<RoomRecord>> innerSet: outerSet.getValue().entrySet()){
-                    List<RoomRecord> roomRecords = innerSet.getValue();
-                    synchronized (roomRecords){
-                        for(RoomRecord roomRecord: roomRecords){
-                            if (roomRecord.recordID.equals(bookingID)){
-//                                roomRecord.booked_by = null;
-                                List<String> studentRecords = studentBookingCount.get(userID);
-                                synchronized (studentRecords){
-                                    // removing the booking, will re-add it if necessary
-                                    studentRecords.remove(roomRecord.recordID);
-                                    if (newCampusName.equals(this.campusName)){
-                                        bookRoom(newCampusName, newRoomNum, newDateText, newTimeSlot, userID);
-                                    } else {
-                                        // contact other objs with udp messages
+            // making sure the old record is owned by this corba obj
+            List<String> studentRecords = studentBookingCount.get(userID);
+            // removing the booking, will re-add it if necessary
+
+            if (newCampusName.equals(this.campusName)){
+                synchronized (studentRecords){
+                    studentRecords.remove(bookingID);
+                }
+                bookingMsg = bookRoom(newCampusName, newRoomNum, newDateText, newTimeSlot, userID, false);
+                // todo seperate methods so it won't log
+
+            } else {
+                // contact other objs with udp messages
+                bookingMsg = contactCampusUDP();
+            }
+
+            if (bookingMsg.startsWith(RoomRecord.failurePrefix)){
+                // the bookingID was only removed in advanced for local new bookings, don't need to do anything if the failed booking was remote
+                if (newCampusName.equals(this.campusName)){
+                    //re-add if the booking has failed, leave it as is otherwise todo look if the record still exists!
+                    outerloop:
+                    for (Map.Entry<LocalDate, HashMap<Integer, List<RoomRecord>>> outerSet: roomRecords.entrySet()){
+                        for(Map.Entry<Integer, List<RoomRecord>> innerSet: outerSet.getValue().entrySet()){
+                            List<RoomRecord> roomRecords = innerSet.getValue();
+                            synchronized (roomRecords){
+                                for(RoomRecord roomRecord: roomRecords){
+                                    if (roomRecord.recordID.equals(bookingID)){
+                                        if(roomRecord.booked_by.equals(userID)){
+                                            synchronized (studentRecords){
+                                                studentRecords.add(bookingID);
+                                                break outerloop;
+                                            }
+                                        }
                                     }
                                 }
-                                msg = RoomRecord.successPrefix + "Booking cancelled.";
-                                break outerloop;
                             }
                         }
                     }
                 }
-            }
 
+            } else {
+                // cancel the old booking(will check its existence )
+                cancelMsg = cancelBooking(bookingID, userID, false);
+            }
             HashMap<String, String> paramNames = new HashMap<>();
             paramNames.put("Booking ID", bookingID);
             log("Change Reservation", paramNames, msg, userID);

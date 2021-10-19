@@ -25,8 +25,8 @@ public class Client {
     public static void main(String[] args) throws InterruptedException, InvalidName, CannotProceed, NotFound {
 
         try {
-            //todo implement changeReservation
-            // make changeReservation, cancelBooking, call other corbas
+            //todo implement changeReservation, make it use udp messages
+            // use the same udp channel for changeReservation
 
             // Waiting for the server to come online when they are started at the same time
             TimeUnit.SECONDS.sleep(4);

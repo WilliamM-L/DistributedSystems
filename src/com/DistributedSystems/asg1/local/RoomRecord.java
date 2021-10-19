@@ -130,4 +130,8 @@ public class RoomRecord {
         boolean timeSlotEntirelyWithin = this.timeSlot.start.isBefore(roomRecord.timeSlot.start) && this.timeSlot.end.isAfter(roomRecord.timeSlot.end);
         return startWithinTimeSlot || endWithinTimeSlot || timeSlotEntirelyWithin;
     }
+
+    public static String extractCampusFromRecordID(String recordID){
+        return recordID.substring(recordID.length() - 3);
+    }
 }
