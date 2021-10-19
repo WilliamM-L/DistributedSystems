@@ -30,8 +30,6 @@ public class Server {
     private static final DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MM-yyyy").toFormatter(Locale.ENGLISH);
 
     public static void main(String[] args) {
-        String registryURL;
-        String objectURL;
         try{
 //            String[] campusNames = {"DVL", "KKL", "WST"};
             String campusName = args[0];

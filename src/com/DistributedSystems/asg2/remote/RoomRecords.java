@@ -154,7 +154,7 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
             // send request to appropriate corba obj
             try {
                 RoomRecordsCorba destination = RoomRecordsCorbaHelper.narrow(namingContextExt.resolve_str(baseCorbaObjName + campusName));
-                return destination.bookRoom(campusName, roomNumber, dateText, timeSlotText, userID);
+                msg = destination.bookRoom(campusName, roomNumber, dateText, timeSlotText, userID);
             } catch (Exception e) {
                 e.printStackTrace();
                 msg = e.getMessage();
@@ -219,37 +219,95 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
     }
 
     public String cancelBooking(String bookingID, String userID)  {
-        //bookingID is the recordID
+        String campusName = bookingID.substring(bookingID.length() - 3);
         String msg = RoomRecord.failurePrefix + "The booked room record could not be found, it was mostly likely deleted.";
-
-        for (Map.Entry<LocalDate, HashMap<Integer, List<RoomRecord>>> outerSet: roomRecords.entrySet()){
-            for(Map.Entry<Integer, List<RoomRecord>> innerSet: outerSet.getValue().entrySet()){
-                List<RoomRecord> roomRecords = innerSet.getValue();
-                synchronized (roomRecords){
-                    for(RoomRecord roomRecord: roomRecords){
-                        if (roomRecord.recordID.equals(bookingID)){
-                            roomRecord.booked_by = null;
-                            List<String> studentRecords = studentBookingCount.get(userID);
-                            synchronized (studentRecords){
-                                studentRecords.remove(roomRecord.recordID);
+        //bookingID is the recordID
+        if (campusName.equals(this.campusName)){
+            outerloop:
+            for (Map.Entry<LocalDate, HashMap<Integer, List<RoomRecord>>> outerSet: roomRecords.entrySet()){
+                for(Map.Entry<Integer, List<RoomRecord>> innerSet: outerSet.getValue().entrySet()){
+                    List<RoomRecord> roomRecords = innerSet.getValue();
+                    synchronized (roomRecords){
+                        for(RoomRecord roomRecord: roomRecords){
+                            if (roomRecord.recordID.equals(bookingID)){
+                                roomRecord.booked_by = null;
+                                List<String> studentRecords = studentBookingCount.get(userID);
+                                synchronized (studentRecords){
+                                    studentRecords.remove(roomRecord.recordID);
+                                }
+                                msg = RoomRecord.successPrefix + "Booking cancelled.";
+                                break outerloop;
                             }
-                            msg = RoomRecord.successPrefix + "Booking cancelled.";
-                            break;
                         }
                     }
                 }
             }
+
+            HashMap<String, String> paramNames = new HashMap<>();
+            paramNames.put("Booking ID", bookingID);
+            log("Cancel Booking", paramNames, msg, userID);
+        } else {
+            // send request to appropriate corba obj
+            try {
+                RoomRecordsCorba destination = RoomRecordsCorbaHelper.narrow(namingContextExt.resolve_str(baseCorbaObjName + campusName));
+                msg = destination.cancelBooking(bookingID, userID);
+            } catch (Exception e) {
+                e.printStackTrace();
+                msg = e.getMessage();
+            }
         }
 
-        HashMap<String, String> paramNames = new HashMap<>();
-        paramNames.put("Booking ID", bookingID);
-        log("Cancel Booking", paramNames, msg, userID);
+
         return msg;
     }
 
-    public String changeReservation(String bookingID, String newCampusName, int newRoomNum, String newTimeSlot, String userID){
+    public String changeReservation(String bookingID, String newCampusName, int newRoomNum, String newTimeSlot, String newDateText, String userID){
+        String msg = RoomRecord.failurePrefix + "The new room record could not be found, it was mostly likely deleted.";
+        String campusName = bookingID.substring(bookingID.length() - 3);
+        // todo the obj that executes this has the old record, lock it(remove id from student list, place it back if other record taken), try to to book the other record
+        //  if the record was booked, cancel the booking ==== if the record is taken, replace the bookingID
 
-        String msg = "woooweeeeeeeee!";
+        //bookingID is the recordID
+        if (campusName.equals(this.campusName)){
+            outerloop:
+            for (Map.Entry<LocalDate, HashMap<Integer, List<RoomRecord>>> outerSet: roomRecords.entrySet()){
+                for(Map.Entry<Integer, List<RoomRecord>> innerSet: outerSet.getValue().entrySet()){
+                    List<RoomRecord> roomRecords = innerSet.getValue();
+                    synchronized (roomRecords){
+                        for(RoomRecord roomRecord: roomRecords){
+                            if (roomRecord.recordID.equals(bookingID)){
+//                                roomRecord.booked_by = null;
+                                List<String> studentRecords = studentBookingCount.get(userID);
+                                synchronized (studentRecords){
+                                    // removing the booking, will re-add it if necessary
+                                    studentRecords.remove(roomRecord.recordID);
+                                    if (newCampusName.equals(this.campusName)){
+                                        bookRoom(newCampusName, newRoomNum, newDateText, newTimeSlot, userID);
+                                    } else {
+                                        // contact other objs with udp messages
+                                    }
+                                }
+                                msg = RoomRecord.successPrefix + "Booking cancelled.";
+                                break outerloop;
+                            }
+                        }
+                    }
+                }
+            }
+
+            HashMap<String, String> paramNames = new HashMap<>();
+            paramNames.put("Booking ID", bookingID);
+            log("Change Reservation", paramNames, msg, userID);
+        } else {
+            // send request to appropriate corba obj
+            try {
+                RoomRecordsCorba destination = RoomRecordsCorbaHelper.narrow(namingContextExt.resolve_str(baseCorbaObjName + campusName));
+                msg = destination.changeReservation(bookingID, newCampusName, newRoomNum, newTimeSlot, newDateText, userID);
+            } catch (Exception e) {
+                e.printStackTrace();
+                msg = e.getMessage();
+            }
+        }
 
         return msg;
     }

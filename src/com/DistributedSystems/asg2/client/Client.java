@@ -14,8 +14,6 @@ import org.omg.CosNaming.NamingContextPackage.NotFound;
 import java.io.*;
 import java.rmi.NotBoundException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +25,8 @@ public class Client {
     public static void main(String[] args) throws InterruptedException, InvalidName, CannotProceed, NotFound {
 
         try {
-            //todo make changeReservation, cancelBooking, bookroom call other corbas
+            //todo implement changeReservation
+            // make changeReservation, cancelBooking, call other corbas
 
             // Waiting for the server to come online when they are started at the same time
             TimeUnit.SECONDS.sleep(4);
@@ -78,7 +77,8 @@ public class Client {
                 new Thread(() -> {
                     try {
                         executeInstructionFile(fileNames[finalI], namingContextExt);
-                    } catch (IOException | NotBoundException | InvalidName | CannotProceed | NotFound e) {
+                    } catch (IOException | NotBoundException | InvalidName | CannotProceed | NotFound | InterruptedException e) {
+                        System.out.println("Error in client thread!");
                         e.printStackTrace();
                     }
                 }).start();
@@ -94,8 +94,9 @@ public class Client {
 
     }
 
-    private static void executeInstructionFile(String instructionFileName, NamingContextExt namingContextExt) throws IOException, NotBoundException, InvalidName, CannotProceed, NotFound {
+    private static void executeInstructionFile(String instructionFileName, NamingContextExt namingContextExt) throws IOException, NotBoundException, InvalidName, CannotProceed, NotFound, InterruptedException {
         String baseCorbaObjName = "RoomRecords";
+        RoomRecordsCorba roomRecords = null;
         String path = instructionDir + "\\" + "corba\\" + instructionFileName;
         File file = new File(path);
         FileReader fileReader = new FileReader(file);
@@ -113,30 +114,10 @@ public class Client {
             boolean admin = username.charAt(3) == 'A';
             BufferedWriter logger = new BufferedWriter(new FileWriter(logsFolder + username + ".txt"));
             // get corba obj based on username
-            RoomRecordsCorba roomRecords = RoomRecordsCorbaHelper.narrow(namingContextExt.resolve_str(baseCorbaObjName + campus));
+            roomRecords = RoomRecordsCorbaHelper.narrow(namingContextExt.resolve_str(baseCorbaObjName + campus));
             while((line=br.readLine())!=null){
                 args = line.split(" ");
                 if (args.length == 0) return;
-//
-//                if (args[0].equals("bookRoom")){
-//                    evaluator = (remoteObjectName, args_) -> remoteObjectName.endsWith(args_[1]);
-//                } else if (args[0].equals("cancelBooking")){
-//                    if (bookingIDs.empty()){
-//                        HashMap<String, String> toLog = new HashMap<String, String>() {{put("Client ignored command", "There is no booking to cancel!");}};
-//                        log(logger, toLog);
-//                        continue;
-//                    } else {
-//                        evaluator = (remoteObjectName, args_) -> remoteObjectName.endsWith(bookingIDs.peek());
-//                    }
-//                } else {
-//                    evaluator = (remoteObjectName, args_) -> remoteObjectName.endsWith(campus);
-//                }
-//
-//                for (String remoteObjectName : remoteObjectNames){
-//                    if (evaluator.verifyCampus(remoteObjectName, args)){
-//                        roomRecords = (IRoomRecords)Naming.lookup(remoteObjectName);
-//                    }
-//                }
 
                 if (roomRecords != null){
                     log(logger, executeInstruction(args, roomRecords, admin, username, bookingIDs));
@@ -151,23 +132,25 @@ public class Client {
             throw e;
         } finally {
             fileReader.close();
+            // causes errors
+//            if (roomRecords != null){
+//                TimeUnit.SECONDS.sleep(3);
+//                roomRecords.shutdown();
+//            }
         }
 
     }
 
     private static void log(BufferedWriter logger, HashMap<String, String> toLog) throws IOException {
         LocalDateTime timeOfRequest = LocalDateTime.now();
-        try {
-            logger.write("==========\n");
-            for (Map.Entry<String, String> set: toLog.entrySet()){
-                logger.write(set.getKey() + " : " + set.getValue() + "\n");
-            }
-            logger.write("Time at Request: " + timeOfRequest + "\n");
-            logger.flush();
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        logger.write("==========\n");
+        for (Map.Entry<String, String> set: toLog.entrySet()){
+            logger.write(set.getKey() + " : " + set.getValue() + "\n");
         }
+        logger.write("Time at Request: " + timeOfRequest + "\n");
+        logger.flush();
+
     }
 
     private static HashMap<String, String> executeInstruction(String[] args, RoomRecordsCorba roomRecords, boolean isAdmin, String userID, Stack<String> bookingIDs) throws IOException {
@@ -241,12 +224,13 @@ public class Client {
             case "changeReservation":
                 campusNameArg = args[1];
                 roomNum = Integer.parseInt(args[2]);
-                timeSlotText = args[3];
+                dateText = args[3];
+                timeSlotText = args[4];
                 if (bookingIDs.empty()){
                     toLog.put("Client ignored command", "There is no booking to cancel!");
                 } else {
                     toLog.put("bookingID", bookingIDs.peek());
-                    toLog.put("reply", roomRecords.changeReservation(bookingIDs.pop(), campusNameArg, roomNum,timeSlotText, userID));
+                    toLog.put("reply", roomRecords.changeReservation(bookingIDs.pop(), campusNameArg, roomNum,timeSlotText, dateText, userID));
                 }
                 break;
             case "wait":
