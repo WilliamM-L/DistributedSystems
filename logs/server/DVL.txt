@@ -1,45 +1,25 @@
 ==========
-User: DVLA1111
+User: DVLA00006
 Operation: Create Room
-Time slots : [{start=10:00, end=11:00}, {start=13:00, end=14:00}]
+Time slots : [{start=10:00, end=11:00}]
 room number : 5
 Date at which to create room records : 2021-10-03
-Time at Request: 2021-10-18T01:00:49.848
+Time at Request: 2021-10-20T16:28:56.899
 Reply: Success: All room records added.
 ==========
-User: DVLA1111
-Operation: Create Room
-Time slots : [{start=08:00, end=11:30}, {start=15:00, end=16:00}]
-room number : 5
-Date at which to create room records : 2021-10-03
-Time at Request: 2021-10-18T01:00:49.864
-Reply: Success: The conflicting timeslots were ignored, the valid ones were added.
-==========
-User: DVLA1111
+User: DVLA00016
 Operation: Delete Room
-Time slots : [{start=13:00, end=14:00}]
+Time slots : [{start=10:00, end=11:00}]
 room number : 5
 Date at which to delete room records : 2021-10-03
-Time at Request: 2021-10-18T01:00:49.865
+Time at Request: 2021-10-20T16:28:57.898
 Reply: Success: 1 out of 1 room records were deleted.
 ==========
-User: DVLA1111
+User: DVLS00006
 Operation: Book Room
 room number : 5
-User ID : DVLA1111
+User ID : DVLS00006
 Time slot : {start=10:00, end=11:00}
 Date at which to book the room : 2021-10-03
-Time at Request: 2021-10-18T01:00:49.866
-Reply: Success: RR444691DVL
-==========
-User: DVLA1111
-Operation: getAvailableTimeSlot
-DateText : 01-10-2021
-Time at Request: 2021-10-18T01:00:49.889
-Reply: WST:0 KKL:0 DVL:0 
-==========
-User: DVLA1111
-Operation: Cancel Booking
-Booking ID : RR444691DVL
-Time at Request: 2021-10-18T01:00:49.891
-Reply: Success: Booking cancelled.
+Time at Request: 2021-10-20T16:28:57.898
+Reply: Failed: Room record could not be found.

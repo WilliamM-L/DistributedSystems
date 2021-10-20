@@ -4,6 +4,7 @@ import com.DistributedSystems.asg1.lambda.Lambdas;
 import com.DistributedSystems.asg1.local.TimeSlot;
 import com.DistributedSystems.asg2.RoomRecordsObj.RoomRecordsCorba;
 import com.DistributedSystems.asg2.RoomRecordsObj.RoomRecordsCorbaHelper;
+import com.DistributedSystems.asg2.remote.UdpPacketType;
 import org.omg.CORBA.ORB;
 import org.omg.CosNaming.NamingContextExt;
 import org.omg.CosNaming.NamingContextExtHelper;
@@ -25,10 +26,10 @@ public class Client {
     public static void main(String[] args) throws InterruptedException, InvalidName, CannotProceed, NotFound {
 
         try {
-            //todo implement changeReservation, make it use udp messages
-            // use the same udp channel for changeReservation
-
+            // todo test: booking in the same campus/different,admin deleting booking while you're trying to get it, two clients cancelling their reservations to get each other's spots (neither get it), A-> B -> C situation
+            // todo test: doing the change in the same campus, doing the change across multiple campuses
             // Waiting for the server to come online when they are started at the same time
+            String test = UdpPacketType.GET_AVAILABLE_DATES.getValue() +",";
             TimeUnit.SECONDS.sleep(4);
 
             // create and initialize the ORB
@@ -45,7 +46,7 @@ public class Client {
 //            System.out.println(roomRecords.changeReservation("1","2",2,"i","i"));
 
             String[] fileNames = new String[]{
-                    "AdminDVL1.txt",
+//                    "AdminDVL1.txt",
 //                    "StudentDVL1.txt",
 //                    "AdminKKL1.txt"
                     // test case 1 - trying to book the same room in 3 threads. Testing the booking capacity as well, also test delete and see if it properly updates the student booking list + admin privileges
@@ -69,6 +70,7 @@ public class Client {
 //                    "TestCase6A1.txt",
 //                    "TestCase6A2.txt",
 //                    "TestCase6S1.txt",
+                    //// test case 7 -
             };
 
             for (int i = 0; i < fileNames.length; i++) {

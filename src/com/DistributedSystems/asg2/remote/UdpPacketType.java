@@ -13,6 +13,10 @@ public enum UdpPacketType {
         this.value = value;
     }
 
+    public int getValue(){
+        return this.value;
+    }
+
     public static Optional<UdpPacketType> UdpPacketType(int value) {
         return Arrays.stream(values())
                 .filter(udpPacketType -> udpPacketType.value == value)

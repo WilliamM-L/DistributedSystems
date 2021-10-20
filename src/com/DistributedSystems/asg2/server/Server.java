@@ -3,6 +3,7 @@ package com.DistributedSystems.asg2.server;
 import com.DistributedSystems.asg2.RoomRecordsObj.RoomRecordsCorba;
 import com.DistributedSystems.asg2.RoomRecordsObj.RoomRecordsCorbaHelper;
 import com.DistributedSystems.asg2.remote.RoomRecords;
+import com.DistributedSystems.asg2.remote.UdpPacketType;
 import org.omg.CORBA.ORB;
 import org.omg.CosNaming.NameComponent;
 import org.omg.CosNaming.NamingContextExt;
@@ -87,6 +88,7 @@ public class Server {
     }
 
     private static void openSocket(int socketPort, RoomRecords roomRecords) throws IOException {
+        DatagramPacket reply = null;
         try (DatagramSocket socket = new DatagramSocket(socketPort)) {
             // create socket at agreed port
             byte[] buffer = new byte[1000];
@@ -94,11 +96,21 @@ public class Server {
                 DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                 socket.receive(request);
                 String stringReceived = new String(buffer, 0, request.getLength());
+                // string received will have the format: operation,arg1,arg2,....argN,garbage data
+                String[] args = stringReceived.split(",");
+                UdpPacketType operation =  UdpPacketType.UdpPacketType(Integer.parseInt(args[0])).get();
+                switch (operation){
+                    case GET_AVAILABLE_DATES:
+                        LocalDate dateToCheck = LocalDate.parse(args[1], dateTimeFormatter);
+                        String availabilities = roomRecords.getAvailableTimeSlot(dateToCheck);
+                        reply = new DatagramPacket(availabilities.getBytes(), availabilities.length(), request.getAddress(), request.getPort());
+                        break;
+                    case CHANGE_RESERVATION:
+                        String book_msg = roomRecords.bookRoom(args[1], Integer.parseInt(args[2]), args[3], args[4], args[5]);
+                        reply = new DatagramPacket(book_msg.getBytes(), book_msg.length(), request.getAddress(), request.getPort());
+                        break;
+                }
 
-                //
-                LocalDate dateToCheck = LocalDate.parse(stringReceived.substring(0,10), dateTimeFormatter);
-                String availabilities = roomRecords.getAvailableTimeSlot(dateToCheck);
-                DatagramPacket reply = new DatagramPacket(availabilities.getBytes(), availabilities.length(), request.getAddress(), request.getPort());
                 socket.send(reply);
             }
         } catch (SocketException e) {

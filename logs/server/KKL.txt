@@ -1,9 +1,0 @@
-==========
-User: DVLA1111
-Operation: Book Room
-room number : 1
-User ID : DVLA1111
-Time slot : {start=06:00, end=07:00}
-Date at which to book the room : 2021-10-31
-Time at Request: 2021-10-18T01:00:49.884
-Reply: Success: RR947810KKL

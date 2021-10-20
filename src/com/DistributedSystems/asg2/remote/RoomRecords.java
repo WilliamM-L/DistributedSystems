@@ -121,7 +121,7 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
         return bookRoom(campusName, roomNumber, dateText, timeSlotText, userID, true);
     }
 
-    public String bookRoom(String campusName, int roomNumber, String dateText, String timeSlotText, String userID, boolean log) {
+    private String bookRoom(String campusName, int roomNumber, String dateText, String timeSlotText, String userID, boolean log) {
         String msg = null;
         if (campusName.equals(this.campusName)){
             LocalDate date = parseDate(dateText);
@@ -190,7 +190,7 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
     public String getAvailableTimeSlot(String dateText, String userID) {
         DatagramSocket datagramSocket = null;
         int serverPort;
-        String stringToSend = UdpPacketType.GET_AVAILABLE_DATES +","+ dateText+",";
+        String stringToSend = UdpPacketType.GET_AVAILABLE_DATES.getValue() +","+ dateText+",";
         StringBuilder stringBuilder = new StringBuilder();
         // fetching external data
         try {
@@ -199,7 +199,7 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
                 byte [] toSend = stringToSend.getBytes();
                 InetAddress host = InetAddress.getByName(null);
                 serverPort = set.getValue();
-                DatagramPacket request = new DatagramPacket(toSend,  dateText.length(), host, serverPort);
+                DatagramPacket request = new DatagramPacket(toSend,  stringToSend.length(), host, serverPort);
                 datagramSocket.send(request);
                 byte[] buffer = new byte[1000];
                 DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
@@ -277,8 +277,6 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
         String cancelMsg = RoomRecord.successPrefix + "The record old was deleted before it could be cancelled.";
         String msg = RoomRecord.failurePrefix + "The new room record could not be found, it was mostly likely deleted.";
         String campusName = RoomRecord.extractCampusFromRecordID(bookingID);
-        // todo test: admin deleting booking while you're trying to get it, two clients cancelling their reservations to get each other's spots (neither get it), A-> B -> C situation
-        // todo test: doing the change in the same campus, doing the change across multiple campuses
 
         if (campusName.equals(this.campusName)){
             // making sure the old record is owned by this corba obj
@@ -346,7 +344,7 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
         DatagramSocket datagramSocket = null;
         int serverPort;
         StringBuilder stringBuilder = new StringBuilder();
-        String stringToSend = UdpPacketType.CHANGE_RESERVATION + "," + campusName + "," + roomNumber +"," + dateText +"," + timeSlotText +"," + userID+",";
+        String stringToSend = UdpPacketType.CHANGE_RESERVATION.getValue() + "," + campusName + "," + roomNumber +"," + dateText +"," + timeSlotText +"," + userID+",";
         try {
             for (Map.Entry<String, Integer> set: externalSocketPorts.entrySet()){
                 if (set.getKey().equals(campusName)){

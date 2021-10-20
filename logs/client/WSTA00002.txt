@@ -5,7 +5,7 @@ time slots : 10:00-11:00/13:00-14:00/15:00-15:30/16:00-16:30
 Command : createRoom
 reply : Success: All room records added.
 userID : WSTA00002
-Time at Request: 2021-10-06T14:35:31.263025700
+Time at Request: 2021-10-20T16:24:12.079
 ==========
 date : 03-10-2021
 room number : 7
@@ -13,7 +13,7 @@ time slots : 16:45-17:45
 Command : createRoom
 reply : Success: All room records added.
 userID : WSTA00002
-Time at Request: 2021-10-06T14:35:31.267028100
+Time at Request: 2021-10-20T16:24:12.086
 ==========
 date : 05-10-2021
 room number : 5
@@ -21,17 +21,17 @@ time slots : 16:45-17:45
 Command : createRoom
 reply : Success: All room records added.
 userID : WSTA00002
-Time at Request: 2021-10-06T14:35:31.269028200
+Time at Request: 2021-10-20T16:24:12.088
 ==========
 date : 03-10-2021
 room number : 5
 time slots : 10:00-11:00
 Command : bookRoom
-reply : Success: RR781772WST
+reply : Success: RR509649WST
 userID : WSTA00002
-Time at Request: 2021-10-06T14:35:31.272027400
+Time at Request: 2021-10-20T16:24:12.089
 ==========
 Client ignored command : Could not understand command
 Command : wait
 userID : WSTA00002
-Time at Request: 2021-10-06T14:35:32.276671300
+Time at Request: 2021-10-20T16:24:13.104
