@@ -93,7 +93,10 @@ public class Server {
             while (true) {
                 DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                 socket.receive(request);
-                LocalDate dateToCheck = LocalDate.parse(new String(buffer, 0, request.getLength()).substring(0,10), dateTimeFormatter);
+                String stringReceived = new String(buffer, 0, request.getLength());
+
+                //
+                LocalDate dateToCheck = LocalDate.parse(stringReceived.substring(0,10), dateTimeFormatter);
                 String availabilities = roomRecords.getAvailableTimeSlot(dateToCheck);
                 DatagramPacket reply = new DatagramPacket(availabilities.getBytes(), availabilities.length(), request.getAddress(), request.getPort());
                 socket.send(reply);

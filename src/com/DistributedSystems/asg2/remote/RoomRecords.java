@@ -190,13 +190,13 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
     public String getAvailableTimeSlot(String dateText, String userID) {
         DatagramSocket datagramSocket = null;
         int serverPort;
-
+        String stringToSend = UdpPacketType.GET_AVAILABLE_DATES +","+ dateText+",";
         StringBuilder stringBuilder = new StringBuilder();
         // fetching external data
         try {
             for (Map.Entry<String, Integer> set: externalSocketPorts.entrySet()){
                 datagramSocket = new DatagramSocket();
-                byte [] toSend = dateText.getBytes();
+                byte [] toSend = stringToSend.getBytes();
                 InetAddress host = InetAddress.getByName(null);
                 serverPort = set.getValue();
                 DatagramPacket request = new DatagramPacket(toSend,  dateText.length(), host, serverPort);
@@ -272,13 +272,13 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
         return msg;
     }
 
-    public String changeReservation(String bookingID, String newCampusName, int newRoomNum, String newTimeSlot, String newDateText, String userID){
+    public String changeReservation(String bookingID, String newCampusName, int newRoomNum, String newTimeSlotText, String newDateText, String userID){
         String bookingMsg;
-        String cancelMsg;
+        String cancelMsg = RoomRecord.successPrefix + "The record old was deleted before it could be cancelled.";
         String msg = RoomRecord.failurePrefix + "The new room record could not be found, it was mostly likely deleted.";
         String campusName = RoomRecord.extractCampusFromRecordID(bookingID);
-        // todo the obj that executes this has the old record, lock it(remove id from student list, place it back if other record taken), try to to book the other record
-        //  if the record was booked, cancel the booking ==== if the record is taken, replace the bookingID
+        // todo test: admin deleting booking while you're trying to get it, two clients cancelling their reservations to get each other's spots (neither get it), A-> B -> C situation
+        // todo test: doing the change in the same campus, doing the change across multiple campuses
 
         if (campusName.equals(this.campusName)){
             // making sure the old record is owned by this corba obj
@@ -289,12 +289,11 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
                 synchronized (studentRecords){
                     studentRecords.remove(bookingID);
                 }
-                bookingMsg = bookRoom(newCampusName, newRoomNum, newDateText, newTimeSlot, userID, false);
-                // todo seperate methods so it won't log
+                bookingMsg = bookRoom(newCampusName, newRoomNum, newDateText, newTimeSlotText, userID, false);
 
             } else {
                 // contact other objs with udp messages
-                bookingMsg = contactCampusUDP();
+                bookingMsg = contactCampusToBookUDP(campusName, newRoomNum, newDateText, newTimeSlotText, userID);
             }
 
             if (bookingMsg.startsWith(RoomRecord.failurePrefix)){
@@ -311,6 +310,7 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
                                         if(roomRecord.booked_by.equals(userID)){
                                             synchronized (studentRecords){
                                                 studentRecords.add(bookingID);
+                                                cancelMsg = RoomRecord.successPrefix + "Could not book, will not cancel previous booking.";
                                                 break outerloop;
                                             }
                                         }
@@ -332,7 +332,7 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
             // send request to appropriate corba obj
             try {
                 RoomRecordsCorba destination = RoomRecordsCorbaHelper.narrow(namingContextExt.resolve_str(baseCorbaObjName + campusName));
-                msg = destination.changeReservation(bookingID, newCampusName, newRoomNum, newTimeSlot, newDateText, userID);
+                msg = destination.changeReservation(bookingID, newCampusName, newRoomNum, newTimeSlotText, newDateText, userID);
             } catch (Exception e) {
                 e.printStackTrace();
                 msg = e.getMessage();
@@ -340,6 +340,37 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
         }
 
         return msg;
+    }
+
+    private String contactCampusToBookUDP(String campusName, int roomNumber, String dateText, String timeSlotText, String userID){
+        DatagramSocket datagramSocket = null;
+        int serverPort;
+        StringBuilder stringBuilder = new StringBuilder();
+        String stringToSend = UdpPacketType.CHANGE_RESERVATION + "," + campusName + "," + roomNumber +"," + dateText +"," + timeSlotText +"," + userID+",";
+        try {
+            for (Map.Entry<String, Integer> set: externalSocketPorts.entrySet()){
+                if (set.getKey().equals(campusName)){
+                    datagramSocket = new DatagramSocket();
+                    byte [] toSend = stringToSend.getBytes();
+                    InetAddress host = InetAddress.getByName(null);
+                    serverPort = set.getValue();
+                    DatagramPacket request = new DatagramPacket(toSend,  stringToSend.length(), host, serverPort);
+                    datagramSocket.send(request);
+                    byte[] buffer = new byte[1000];
+                    DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
+                    datagramSocket.receive(reply);
+                    stringBuilder.append(new String(buffer, 0, reply.getLength()));
+//                System.out.println("Reply: " + new String(reply.getData()));
+                    break;
+                }
+
+            }
+        }catch (SocketException e){
+            System.out.println("Socket: " + e.getMessage());
+        }catch (IOException e){
+            System.out.println("IO: " + e.getMessage());
+        }finally {if(datagramSocket != null) datagramSocket.close();}
+        return stringBuilder.toString();
     }
 
     private static void log(String operation, HashMap<String, String> operationParams, String reply, String userID){
