@@ -1,0 +1,4 @@
+login DVLA2222
+// deleting the wanted record
+wait 1
+deleteRoom 1 31-10-2021 07:00-08:00

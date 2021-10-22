@@ -109,6 +109,10 @@ public class Server {
                         String book_msg = roomRecords.bookRoom(args[1], Integer.parseInt(args[2]), args[3], args[4], args[5]);
                         reply = new DatagramPacket(book_msg.getBytes(), book_msg.length(), request.getAddress(), request.getPort());
                         break;
+                    default:
+                        String defaultMessage = "Does not this operation through udp messages";
+                        reply = new DatagramPacket(defaultMessage.getBytes(), defaultMessage.length(), request.getAddress(), request.getPort());
+                        break;
                 }
 
                 socket.send(reply);

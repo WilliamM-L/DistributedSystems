@@ -1,0 +1,4 @@
+login DVLA1111
+bookRoom DVL 1 31-10-2021 06:00-07:00
+// change to a room that's wanted by another client too
+changeReservation DVL 1 31-10-2021 08:00-09:00

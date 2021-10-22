@@ -1,25 +1,28 @@
 ==========
-User: DVLA00006
-Operation: Create Room
-Time slots : [{start=10:00, end=11:00}]
-room number : 5
-Date at which to create room records : 2021-10-03
-Time at Request: 2021-10-20T16:28:56.899
-Reply: Success: All room records added.
-==========
-User: DVLA00016
+User: DVLA2222
 Operation: Delete Room
-Time slots : [{start=10:00, end=11:00}]
-room number : 5
-Date at which to delete room records : 2021-10-03
-Time at Request: 2021-10-20T16:28:57.898
+Time slots : [{start=06:00, end=07:00}]
+room number : 1
+Date at which to delete room records : 2021-10-31
+Time at Request: 2021-10-22T03:21:53.320
 Reply: Success: 1 out of 1 room records were deleted.
 ==========
-User: DVLS00006
+User: DVLA1111
 Operation: Book Room
-room number : 5
-User ID : DVLS00006
-Time slot : {start=10:00, end=11:00}
-Date at which to book the room : 2021-10-03
-Time at Request: 2021-10-20T16:28:57.898
-Reply: Failed: Room record could not be found.
+room number : 1
+User ID : DVLA1111
+Time slot : {start=06:00, end=07:00}
+Date at which to book the room : 2021-10-31
+Time at Request: 2021-10-22T03:21:53.320
+Reply: Success: RR339202DVL
+==========
+User: DVLA1111
+Operation: Change Reservation
+Booking ID : RR339202DVL
+room number : 1
+User ID : DVLA1111
+Time slot : 07:00-08:00
+Date at which to book the room : 31-10-2021
+Campus name : DVL
+Time at Request: 2021-10-22T03:21:53.337
+Reply: Booking: Success: RR689494DVL Booking cancelation: Failed: The booked room record could not be found, it was mostly likely deleted.

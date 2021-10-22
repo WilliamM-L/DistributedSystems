@@ -273,12 +273,12 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
     }
 
     public String changeReservation(String bookingID, String newCampusName, int newRoomNum, String newTimeSlotText, String newDateText, String userID){
-        String bookingMsg;
+        String bookingMsg = RoomRecord.failurePrefix + "The record you wanted could not be found";
         String cancelMsg = RoomRecord.successPrefix + "The record old was deleted before it could be cancelled.";
-        String msg = RoomRecord.failurePrefix + "The new room record could not be found, it was mostly likely deleted.";
-        String campusName = RoomRecord.extractCampusFromRecordID(bookingID);
+        String msg = null;
+        String oldCampusName = RoomRecord.extractCampusFromRecordID(bookingID);
 
-        if (campusName.equals(this.campusName)){
+        if (oldCampusName.equals(this.campusName)){
             // making sure the old record is owned by this corba obj
             List<String> studentRecords = studentBookingCount.get(userID);
             // removing the booking, will re-add it if necessary
@@ -291,7 +291,7 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
 
             } else {
                 // contact other objs with udp messages
-                bookingMsg = contactCampusToBookUDP(campusName, newRoomNum, newDateText, newTimeSlotText, userID);
+                bookingMsg = contactCampusToBookUDP(newCampusName, newRoomNum, newDateText, newTimeSlotText, userID);
             }
 
             if (bookingMsg.startsWith(RoomRecord.failurePrefix)){
@@ -323,13 +323,19 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
                 // cancel the old booking(will check its existence )
                 cancelMsg = cancelBooking(bookingID, userID, false);
             }
+            msg = "Booking: " + bookingMsg + " Booking cancelation: " + cancelMsg;
             HashMap<String, String> paramNames = new HashMap<>();
             paramNames.put("Booking ID", bookingID);
+            paramNames.put("Campus name", newCampusName);
+            paramNames.put("room number", Integer.toString(newRoomNum));
+            paramNames.put("Date at which to book the room", newDateText);
+            paramNames.put("Time slot", newTimeSlotText);
+            paramNames.put("User ID", userID);
             log("Change Reservation", paramNames, msg, userID);
         } else {
             // send request to appropriate corba obj
             try {
-                RoomRecordsCorba destination = RoomRecordsCorbaHelper.narrow(namingContextExt.resolve_str(baseCorbaObjName + campusName));
+                RoomRecordsCorba destination = RoomRecordsCorbaHelper.narrow(namingContextExt.resolve_str(baseCorbaObjName + oldCampusName));
                 msg = destination.changeReservation(bookingID, newCampusName, newRoomNum, newTimeSlotText, newDateText, userID);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -411,7 +417,9 @@ public class RoomRecords extends RoomRecordsCorbaPOA {
         HashMap<Integer, List<RoomRecord>> entry = new HashMap<>();
         List<RoomRecord> roomRecordList = new ArrayList<>();
         roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(6,0)), campusName));
+        roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(7,0)), campusName));
         roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(8,0)), campusName));
+        roomRecordList.add(new RoomRecord(new TimeSlot(LocalTime.of(9,0)), campusName));
         entry.put(1, roomRecordList);
         roomRecords.put(date, entry);
 

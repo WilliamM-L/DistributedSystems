@@ -26,8 +26,7 @@ public class Client {
     public static void main(String[] args) throws InterruptedException, InvalidName, CannotProceed, NotFound {
 
         try {
-            // todo test: booking in the same campus/different,admin deleting booking while you're trying to get it, two clients cancelling their reservations to get each other's spots (neither get it), A-> B -> C situation
-            // todo test: doing the change in the same campus, doing the change across multiple campuses
+            // todo RUN start orbd -ORBInitialPort 8050 -ORBInitialHost localhost IN ROOT DIRECTORY
             // Waiting for the server to come online when they are started at the same time
             String test = UdpPacketType.GET_AVAILABLE_DATES.getValue() +",";
             TimeUnit.SECONDS.sleep(4);
@@ -70,7 +69,20 @@ public class Client {
 //                    "TestCase6A1.txt",
 //                    "TestCase6A2.txt",
 //                    "TestCase6S1.txt",
-                    //// test case 7 -
+                    //// test case 7 - single client, book one, change it for a record in same obj, change again for a booking in another campus, change again for a booking in the third campus
+//                    "TC7A1.txt",
+                    //// test case 8 - two clients cancelling their reservations to get the same record (only one gets it)
+//                    "TC8A1.txt",
+//                    "TC8A2.txt",
+                    //// test case 9 - two clients cancelling their reservations to get each other's spots (neither get it)
+//                    "TC9A1.txt",
+//                    "TC9A2.txt",
+                    //// test case 10 - admin deleting booking while you're trying to get it
+//                    "TC10A1.txt",
+//                    "TC10A2.txt",
+                    //// test case 11 - the admin deletes the old booking you had as you changed
+                    "TC11A1.txt",
+                    "TC11A2.txt",
             };
 
             for (int i = 0; i < fileNames.length; i++) {
@@ -118,6 +130,8 @@ public class Client {
             // get corba obj based on username
             roomRecords = RoomRecordsCorbaHelper.narrow(namingContextExt.resolve_str(baseCorbaObjName + campus));
             while((line=br.readLine())!=null){
+                if (line.startsWith("//")) continue;
+
                 args = line.split(" ");
                 if (args.length == 0) return;
 
@@ -228,12 +242,21 @@ public class Client {
                 roomNum = Integer.parseInt(args[2]);
                 dateText = args[3];
                 timeSlotText = args[4];
+                toLog.put("new campus name", campusNameArg);
+                toLog.put("room number", Integer.toString(roomNum));
+                toLog.put("date", dateText);
+                toLog.put("time slots",timeSlotText);
+                toLog.put("bookingID", bookingIDs.peek());
                 if (bookingIDs.empty()){
                     toLog.put("Client ignored command", "There is no booking to cancel!");
                 } else {
-                    toLog.put("bookingID", bookingIDs.peek());
-                    toLog.put("reply", roomRecords.changeReservation(bookingIDs.pop(), campusNameArg, roomNum,timeSlotText, dateText, userID));
+                    reply = roomRecords.changeReservation(bookingIDs.pop(), campusNameArg, roomNum,timeSlotText, dateText, userID);
+                    if (reply.startsWith("Booking: Success:")){
+                        bookingIDs.push(reply.split(" ")[2]);
+                    }
+                    toLog.put("reply", reply);
                 }
+
                 break;
             case "wait":
                 int toWait = Integer.parseInt(args[1]);
