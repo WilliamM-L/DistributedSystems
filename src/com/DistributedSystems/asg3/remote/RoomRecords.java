@@ -428,7 +428,6 @@ public class RoomRecords implements IRoomRecords {
     }
 
     public RoomRecords(){
-        DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MM-yyyy").toFormatter(Locale.ENGLISH);
         // conversion ex: LocalDateTime date = LocalDateTime.from(LocalDate.parse("01-10-2021", formatter).atStartOfDay());
     }
 
