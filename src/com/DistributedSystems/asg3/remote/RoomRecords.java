@@ -3,15 +3,14 @@ package com.DistributedSystems.asg3.remote;
 import com.DistributedSystems.asg1.local.RoomRecord;
 import com.DistributedSystems.asg1.local.TimeSlot;
 import com.DistributedSystems.asg2.remote.UdpPacketType;
+import com.DistributedSystems.asg3.client.RoomRecordsService;
+import com.DistributedSystems.asg3.client.IRoomRecords;
 
 import javax.jws.WebService;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
+import java.net.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -149,14 +148,15 @@ public class RoomRecords implements IRoomRecords {
             }
 
         } else {
-            // send request to appropriate corba obj
-//            try {
-//                RoomRecordsCorba destination = RoomRecordsCorbaHelper.narrow(namingContextExt.resolve_str(baseCorbaObjName + campusName));
-//                msg = destination.bookRoom(campusName, roomNumber, dateText, timeSlotText, userID);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                msg = e.getMessage();
-//            }
+            // send request to appropriate web service
+            try {
+                RoomRecordsService roomRecordsService = new RoomRecordsService(new URL("http://127.0.0.1:" + WebServiceConstants.webServicePorts.get(campusName) + "/" + campusName));
+                IRoomRecords destination = roomRecordsService.getRoomRecordsPort();
+                msg = destination.bookRoom(campusName, roomNumber, dateText, timeSlotText, userID);
+            } catch (Exception e) {
+                e.printStackTrace();
+                msg = e.getMessage();
+            }
         }
 
         return msg;
@@ -250,14 +250,15 @@ public class RoomRecords implements IRoomRecords {
                 log("Cancel Booking", paramNames, msg, userID);
             }
         } else {
-            // send request to appropriate corba obj
-//            try {
-//                RoomRecordsCorba destination = RoomRecordsCorbaHelper.narrow(namingContextExt.resolve_str(baseCorbaObjName + campusName));
-//                msg = destination.cancelBooking(bookingID, userID);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                msg = e.getMessage();
-//            }
+            // send request to appropriate webservice
+            try {
+                RoomRecordsService roomRecordsService = new RoomRecordsService(new URL("http://127.0.0.1:" + WebServiceConstants.webServicePorts.get(campusName) + "/" + campusName));
+                IRoomRecords destination = roomRecordsService.getRoomRecordsPort();
+                msg = destination.cancelBooking(bookingID, userID);
+            } catch (Exception e) {
+                e.printStackTrace();
+                msg = e.getMessage();
+            }
         }
 
         return msg;
@@ -325,13 +326,14 @@ public class RoomRecords implements IRoomRecords {
             log("Change Reservation", paramNames, msg, userID);
         } else {
             // send request to appropriate corba obj
-//            try {
-//                RoomRecordsCorba destination = RoomRecordsCorbaHelper.narrow(namingContextExt.resolve_str(baseCorbaObjName + oldCampusName));
-//                msg = destination.changeReservation(bookingID, newCampusName, newRoomNum, newTimeSlotText, newDateText, userID);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                msg = e.getMessage();
-//            }
+            try {
+                RoomRecordsService roomRecordsService = new RoomRecordsService(new URL("http://127.0.0.1:" + WebServiceConstants.webServicePorts.get(campusName) + "/" + campusName));
+                IRoomRecords destination = roomRecordsService.getRoomRecordsPort();
+                msg = destination.changeReservation(bookingID, newCampusName, newRoomNum, newTimeSlotText, newDateText, userID);
+            } catch (Exception e) {
+                e.printStackTrace();
+                msg = e.getMessage();
+            }
         }
 
         return msg;

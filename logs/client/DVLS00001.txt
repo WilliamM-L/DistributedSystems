@@ -3,11 +3,11 @@ date : 31-10-2021
 room number : 1
 time slots : 06:00-07:00
 Command : bookRoom
-reply : Success: RR41832DVL
+reply : Failed: Room is already booked.
 userID : DVLS00001
-Time at Request: 2021-10-20T16:11:42.227
+Time at Request: 2021-10-30T23:47:33.430
 ==========
 Client ignored command : Admin status required
 Command : createRoom
 userID : DVLS00001
-Time at Request: 2021-10-20T16:11:42.233
+Time at Request: 2021-10-30T23:47:33.435

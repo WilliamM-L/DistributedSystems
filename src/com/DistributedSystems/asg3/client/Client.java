@@ -33,7 +33,7 @@ public class Client {
 //            System.out.println(roomRecords.changeReservation("1","2",2,"i","i"));
 
             String[] fileNames = new String[]{
-                    "Sanity.txt",
+//                    "Sanity.txt",
 //                    "AdminDVL1.txt",
 //                    "StudentDVL1.txt",
 //                    "AdminKKL1.txt"
@@ -42,12 +42,12 @@ public class Client {
 //                    "TestCase1S.txt",
 //                    "TestCase1S2.txt",
                     //// test case 2 - doing a bunch of stuff at once, kept same conflict, activity across servers, + simple get available dates test
-                    "TestCase2A1.txt",
-                    "TestCase2A2.txt",
-                    "TestCase2A3.txt",
-                    "TestCase2S1.txt",
-                    "TestCase2S2.txt",
-                    "TestCase2S3.txt",
+//                    "TestCase2A1.txt",
+//                    "TestCase2A2.txt",
+//                    "TestCase2A3.txt",
+//                    "TestCase2S1.txt",
+//                    "TestCase2S2.txt",
+//                    "TestCase2S3.txt",
                     //// test case 3 - Will try to book and delete a room that doesn’t exist anymore.
 //                    "TestCase3A1.txt",
                     //// test case 4 - Will try to cancel a booking that doesn’t exist.
@@ -64,8 +64,8 @@ public class Client {
 //                    "TC8A1.txt",
 //                    "TC8A2.txt",
                     //// test case 9 - two clients cancelling their reservations to get each other's spots (neither get it)
-//                    "TC9A1.txt",
-//                    "TC9A2.txt",
+                    "TC9A1.txt",
+                    "TC9A2.txt",
                     //// test case 10 - admin deleting booking while you're trying to get it
 //                    "TC10A1.txt",
 //                    "TC10A2.txt",
@@ -115,7 +115,7 @@ public class Client {
             String campus = username.substring(0, 3);
             boolean admin = username.charAt(3) == 'A';
             BufferedWriter logger = new BufferedWriter(new FileWriter(logsFolder + username + ".txt"));
-            // todo make this work
+
             RoomRecordsService roomRecordsService = new RoomRecordsService(new URL("http://127.0.0.1:" + WebServiceConstants.webServicePorts.get(campus) + "/" + campus));
             roomRecords = roomRecordsService.getRoomRecordsPort();
             while((line=br.readLine())!=null){

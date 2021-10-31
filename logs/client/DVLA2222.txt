@@ -1,8 +1,18 @@
 ==========
 date : 31-10-2021
 room number : 1
-time slots : 06:00-07:00
-Command : deleteRoom
-reply : Success: 1 out of 1 room records were deleted.
+time slots : 07:00-08:00
+Command : bookRoom
+reply : Success: RR546893DVL
 userID : DVLA2222
-Time at Request: 2021-10-22T03:21:53.331
+Time at Request: 2021-10-30T23:54:59.145
+==========
+date : 31-10-2021
+new campus name : DVL
+room number : 1
+time slots : 06:00-07:00
+Command : changeReservation
+reply : Booking: Failed: Room is already booked. Booking cancelation: Success: Could not book, will not cancel previous booking.
+userID : DVLA2222
+bookingID : RR546893DVL
+Time at Request: 2021-10-30T23:54:59.153

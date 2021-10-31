@@ -2,4 +2,34 @@
 Client ignored command : Could not understand command
 Command : wait
 userID : KKLS00002
-Time at Request: 2021-10-30T17:27:18.176
+Time at Request: 2021-10-30T23:49:30.438
+==========
+date : 03-10-2021
+room number : 7
+time slots : 16:45-17:45
+Command : bookRoom
+reply : Success: RR867070DVL
+userID : KKLS00002
+Time at Request: 2021-10-30T23:49:30.493
+==========
+date : 03-10-2021
+room number : 7
+time slots : 16:45-17:45
+Command : bookRoom
+reply : Success: RR775266KKL
+userID : KKLS00002
+Time at Request: 2021-10-30T23:49:30.495
+==========
+date : 03-10-2021
+room number : 7
+time slots : 16:45-17:45
+Command : bookRoom
+reply : Success: RR268007WST
+userID : KKLS00002
+Time at Request: 2021-10-30T23:49:30.523
+==========
+date : 07-10-2021
+Command : getAvailableTimeSlot
+reply : WST:0 DVL:0 KKL:0 
+userID : KKLS00002
+Time at Request: 2021-10-30T23:49:30.531
