@@ -1,18 +1,24 @@
 ==========
-date : 31-10-2021
-room number : 1
-time slots : 06:00-07:00
-Command : bookRoom
-reply : Success: RR339202DVL
+date : 03-10-2021
+room number : 5
+time slots : 10:00-11:00/13:00-14:00
+Command : createRoom
+reply : Success: All timeslots were added.
 userID : DVLA1111
-Time at Request: 2021-10-22T03:21:53.331
+Time at Request: 2021-10-30T17:27:17.213
 ==========
-date : 31-10-2021
-new campus name : DVL
-room number : 1
-time slots : 07:00-08:00
-Command : changeReservation
-reply : Booking: Success: RR689494DVL Booking cancelation: Failed: The booked room record could not be found, it was mostly likely deleted.
+date : 03-10-2021
+room number : 5
+time slots : 08:00-11:30/15:00-16:00
+Command : createRoom
+reply : Success: The conflicting timeslots were ignored, the valid ones were added.
 userID : DVLA1111
-bookingID : RR339202DVL
-Time at Request: 2021-10-22T03:21:53.338
+Time at Request: 2021-10-30T17:27:17.222
+==========
+date : 03-10-2021
+room number : 5
+time slots : 13:00-14:00
+Command : deleteRoom
+reply : Success: 2 out of 1 room records were deleted.
+userID : DVLA1111
+Time at Request: 2021-10-30T17:27:17.225

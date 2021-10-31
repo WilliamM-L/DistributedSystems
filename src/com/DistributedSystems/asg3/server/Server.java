@@ -2,6 +2,7 @@ package com.DistributedSystems.asg3.server;
 
 import com.DistributedSystems.asg3.remote.RoomRecords;
 import com.DistributedSystems.asg2.remote.UdpPacketType;
+import com.DistributedSystems.asg3.remote.WebServiceConstants;
 
 import javax.xml.ws.Endpoint;
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class Server {
                 }
             }).start();
 
-            endpoint.publish("http://127.0.0.1:8080/" + campusName);
+            endpoint.publish("http://127.0.0.1:"+ WebServiceConstants.webServicePorts.get(campusName) + "/" +  campusName);
             // wait for invocations from clients
             System.out.println("RoomRecords ready and waiting ...");
         }

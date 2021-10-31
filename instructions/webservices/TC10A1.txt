@@ -1,0 +1,4 @@
+login DVLA1111
+bookRoom DVL 1 31-10-2021 06:00-07:00
+wait 1
+changeReservation DVL 1 31-10-2021 07:00-08:00

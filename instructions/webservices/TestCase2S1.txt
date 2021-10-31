@@ -1,0 +1,6 @@
+login DVLS00002
+wait 1
+bookRoom DVL 5 03-10-2021 13:00-14:00
+bookRoom WST 5 03-10-2021 13:00-14:00
+bookRoom KKL 5 03-10-2021 13:00-14:00
+getAvailableTimeSlot 05-10-2021

@@ -3,8 +3,10 @@ package com.DistributedSystems.asg3.client;
 import com.DistributedSystems.asg1.lambda.Lambdas;
 import com.DistributedSystems.asg1.local.TimeSlot;
 import com.DistributedSystems.asg2.remote.UdpPacketType;
+import com.DistributedSystems.asg3.remote.WebServiceConstants;
 
 import java.io.*;
+import java.net.URL;
 import java.rmi.NotBoundException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -40,12 +42,12 @@ public class Client {
 //                    "TestCase1S.txt",
 //                    "TestCase1S2.txt",
                     //// test case 2 - doing a bunch of stuff at once, kept same conflict, activity across servers, + simple get available dates test
-//                    "TestCase2A1.txt",
-//                    "TestCase2A2.txt",
-//                    "TestCase2A3.txt",
-//                    "TestCase2S1.txt",
-//                    "TestCase2S2.txt",
-//                    "TestCase2S3.txt",
+                    "TestCase2A1.txt",
+                    "TestCase2A2.txt",
+                    "TestCase2A3.txt",
+                    "TestCase2S1.txt",
+                    "TestCase2S2.txt",
+                    "TestCase2S3.txt",
                     //// test case 3 - Will try to book and delete a room that doesn’t exist anymore.
 //                    "TestCase3A1.txt",
                     //// test case 4 - Will try to cancel a booking that doesn’t exist.
@@ -96,13 +98,12 @@ public class Client {
     }
 
     private static void executeInstructionFile(String instructionFileName) throws IOException, NotBoundException, InterruptedException {
-        String baseCorbaObjName = "RoomRecords";
-        IRoomRecords roomRecords = null;
+        IRoomRecords roomRecords;
         String path = instructionDir + "\\" + "webservices\\" + instructionFileName;
         File file = new File(path);
         FileReader fileReader = new FileReader(file);
         String line = "none";
-        String[] args = null;
+        String[] args;
         Lambdas.ChooseCampus evaluator = null;
         boolean campusServerFound;
         Stack<String> bookingIDs = new Stack<>();
@@ -115,7 +116,7 @@ public class Client {
             boolean admin = username.charAt(3) == 'A';
             BufferedWriter logger = new BufferedWriter(new FileWriter(logsFolder + username + ".txt"));
             // todo make this work
-            RoomRecordsService roomRecordsService = new RoomRecordsService();
+            RoomRecordsService roomRecordsService = new RoomRecordsService(new URL("http://127.0.0.1:" + WebServiceConstants.webServicePorts.get(campus) + "/" + campus));
             roomRecords = roomRecordsService.getRoomRecordsPort();
             while((line=br.readLine())!=null){
                 if (line.startsWith("//")) continue;

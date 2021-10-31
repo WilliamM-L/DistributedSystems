@@ -1,0 +1,33 @@
+==========
+User: WSTA00002
+Operation: Create Room
+Time slots : [{start=10:00, end=11:00}, {start=13:00, end=14:00}, {start=15:00, end=15:30}, {start=16:00, end=16:30}]
+room number : 5
+Date at which to create room records : 2021-10-03
+Time at Request: 2021-10-30T17:27:17.201
+Reply: Success: All room records added.
+==========
+User: WSTA00002
+Operation: Create Room
+Time slots : [{start=16:45, end=17:45}]
+room number : 7
+Date at which to create room records : 2021-10-03
+Time at Request: 2021-10-30T17:27:17.222
+Reply: Success: All room records added.
+==========
+User: WSTA00002
+Operation: Create Room
+Time slots : [{start=16:45, end=17:45}]
+room number : 5
+Date at which to create room records : 2021-10-05
+Time at Request: 2021-10-30T17:27:17.225
+Reply: Success: All room records added.
+==========
+User: WSTA00002
+Operation: Book Room
+room number : 5
+User ID : WSTA00002
+Time slot : {start=10:00, end=11:00}
+Date at which to book the room : 2021-10-03
+Time at Request: 2021-10-30T17:27:17.228
+Reply: Success: RR973500WST

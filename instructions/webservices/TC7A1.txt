@@ -1,0 +1,11 @@
+login DVLA1111
+createRoom 5 03-10-2021 10:00-11:00/13:00-14:00
+createRoom 5 03-10-2021 08:00-11:30/15:00-16:00
+getAvailableTimeSlot 01-10-2021
+bookRoom DVL 5 03-10-2021 10:00-11:00
+// change to a local room
+changeReservation DVL 5 03-10-2021 15:00-16:00
+// change to a room in another campus
+changeReservation KKL 1 31-10-2021 06:00-07:00
+// change to a room in the third campus
+changeReservation WST 1 31-10-2021 06:00-07:00
